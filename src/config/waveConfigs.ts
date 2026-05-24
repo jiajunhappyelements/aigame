@@ -1,0 +1,68 @@
+import type { EnemyId } from "../types";
+
+export type WaveEnemyEntry = { enemyId: EnemyId; count: number; delay: number };
+
+export const WAVE_CONFIGS: Record<string, WaveEnemyEntry[]> = {
+  "1-1": [{ enemyId: "E01", count: 3, delay: 1.5 }],
+  "1-2": [{ enemyId: "E01", count: 4, delay: 1.3 }],
+  "1-3": [{ enemyId: "E02", count: 2, delay: 1.5 }],
+  "1-4": [{ enemyId: "E01", count: 3, delay: 1.2 }, { enemyId: "E02", count: 2, delay: 1.5 }],
+  "1-5": [{ enemyId: "E01", count: 4, delay: 1.0 }, { enemyId: "E02", count: 3, delay: 1.2 }],
+  "1-6": [{ enemyId: "E02", count: 4, delay: 1.0 }],
+  "1-7": [{ enemyId: "E01", count: 5, delay: 0.8 }, { enemyId: "E02", count: 3, delay: 1.0 }],
+  "1-8": [{ enemyId: "E01", count: 6, delay: 0.6 }, { enemyId: "E02", count: 4, delay: 0.8 }],
+
+  "2-1": [{ enemyId: "E01", count: 4, delay: 1.0 }, { enemyId: "E03", count: 1, delay: 2.0 }],
+  "2-2": [{ enemyId: "E03", count: 2, delay: 1.8 }],
+  "2-3": [{ enemyId: "E01", count: 3, delay: 0.8 }, { enemyId: "E02", count: 2, delay: 1.0 }, { enemyId: "E03", count: 1, delay: 2.0 }],
+  "2-4": [{ enemyId: "E03", count: 2, delay: 1.5 }, { enemyId: "E02", count: 3, delay: 1.0 }],
+  "2-5": [{ enemyId: "E01", count: 5, delay: 0.7 }, { enemyId: "E03", count: 2, delay: 1.5 }],
+  "2-6": [{ enemyId: "E02", count: 4, delay: 0.8 }, { enemyId: "E03", count: 2, delay: 1.2 }],
+  "2-7": [{ enemyId: "E03", count: 3, delay: 1.2 }, { enemyId: "E01", count: 4, delay: 0.6 }],
+  "2-8": [{ enemyId: "E03", count: 3, delay: 1.0 }, { enemyId: "E02", count: 4, delay: 0.8 }],
+
+  "3-1": [{ enemyId: "E04", count: 3, delay: 1.2 }],
+  "3-2": [{ enemyId: "E01", count: 4, delay: 0.8 }, { enemyId: "E04", count: 2, delay: 1.5 }],
+  "3-3": [{ enemyId: "E04", count: 3, delay: 1.0 }, { enemyId: "E02", count: 2, delay: 1.2 }],
+  "3-4": [{ enemyId: "E01", count: 5, delay: 0.6 }, { enemyId: "E04", count: 3, delay: 1.0 }],
+  "3-5": [{ enemyId: "E04", count: 4, delay: 0.8 }, { enemyId: "E03", count: 1, delay: 2.0 }],
+  "3-6": [{ enemyId: "E03", count: 2, delay: 1.5 }, { enemyId: "E04", count: 3, delay: 1.0 }],
+  "3-7": [{ enemyId: "E01", count: 6, delay: 0.5 }, { enemyId: "E04", count: 4, delay: 0.8 }],
+  "3-8": [{ enemyId: "E04", count: 5, delay: 0.6 }, { enemyId: "E03", count: 2, delay: 1.0 }],
+
+  "4-1": [{ enemyId: "E05", count: 2, delay: 1.5 }],
+  "4-2": [{ enemyId: "E01", count: 4, delay: 0.7 }, { enemyId: "E05", count: 2, delay: 1.2 }],
+  "4-3": [{ enemyId: "E05", count: 3, delay: 1.0 }, { enemyId: "E04", count: 2, delay: 1.2 }],
+  "4-4": [{ enemyId: "E02", count: 4, delay: 0.8 }, { enemyId: "E05", count: 3, delay: 1.0 }],
+  "4-5": [{ enemyId: "E05", count: 4, delay: 0.7 }, { enemyId: "E03", count: 2, delay: 1.2 }],
+  "4-6": [{ enemyId: "E03", count: 2, delay: 1.0 }, { enemyId: "E05", count: 3, delay: 0.8 }, { enemyId: "E04", count: 2, delay: 1.0 }],
+  "4-7": [{ enemyId: "E05", count: 5, delay: 0.5 }, { enemyId: "E04", count: 3, delay: 0.8 }],
+  "4-8": [{ enemyId: "E05", count: 5, delay: 0.5 }, { enemyId: "E03", count: 3, delay: 0.8 }],
+
+  "5-1": [{ enemyId: "E06", count: 2, delay: 1.5 }],
+  "5-2": [{ enemyId: "E06", count: 3, delay: 1.2 }],
+  "5-3": [{ enemyId: "E06", count: 2, delay: 1.0 }, { enemyId: "E07", count: 1, delay: 2.0 }],
+  "5-4": [{ enemyId: "E07", count: 2, delay: 1.5 }],
+  "5-5": [{ enemyId: "E06", count: 3, delay: 0.8 }, { enemyId: "E07", count: 2, delay: 1.2 }],
+  "5-6": [{ enemyId: "E07", count: 2, delay: 1.0 }, { enemyId: "E05", count: 3, delay: 0.8 }],
+  "5-7": [{ enemyId: "E06", count: 4, delay: 0.6 }, { enemyId: "E07", count: 2, delay: 1.0 }],
+  "5-8": [{ enemyId: "E07", count: 3, delay: 0.8 }, { enemyId: "E06", count: 3, delay: 0.8 }],
+
+  "6-1": [{ enemyId: "E08", count: 1, delay: 2.0 }],
+  "6-2": [{ enemyId: "E08", count: 2, delay: 1.5 }],
+  "6-3": [{ enemyId: "E08", count: 1, delay: 1.5 }, { enemyId: "E06", count: 3, delay: 0.8 }],
+  "6-4": [{ enemyId: "E08", count: 2, delay: 1.2 }, { enemyId: "E07", count: 2, delay: 1.0 }],
+  "6-5": [{ enemyId: "E08", count: 2, delay: 1.0 }, { enemyId: "E05", count: 4, delay: 0.6 }],
+  "6-6": [{ enemyId: "E08", count: 3, delay: 1.0 }, { enemyId: "E06", count: 3, delay: 0.8 }],
+  "6-7": [{ enemyId: "E08", count: 3, delay: 0.8 }, { enemyId: "E07", count: 3, delay: 0.8 }],
+  "6-8": [{ enemyId: "E08", count: 3, delay: 0.7 }, { enemyId: "E07", count: 3, delay: 0.7 }, { enemyId: "E06", count: 2, delay: 0.8 }],
+
+  "7-1": [{ enemyId: "E09", count: 2, delay: 1.5 }],
+  "7-2": [{ enemyId: "E10", count: 1, delay: 2.0 }],
+  "7-3": [{ enemyId: "E09", count: 2, delay: 1.2 }, { enemyId: "E10", count: 1, delay: 1.5 }],
+  "7-4": [{ enemyId: "E09", count: 3, delay: 1.0 }, { enemyId: "E08", count: 1, delay: 1.5 }],
+  "7-5": [{ enemyId: "E10", count: 1, delay: 1.5 }, { enemyId: "E07", count: 3, delay: 0.8 }],
+  "7-6": [{ enemyId: "E09", count: 3, delay: 0.8 }, { enemyId: "E10", count: 1, delay: 1.2 }, { enemyId: "E08", count: 2, delay: 1.0 }],
+  "7-7": [{ enemyId: "E10", count: 2, delay: 1.0 }, { enemyId: "E09", count: 3, delay: 0.7 }],
+  "7-8": [{ enemyId: "E10", count: 2, delay: 0.8 }, { enemyId: "E09", count: 3, delay: 0.6 }, { enemyId: "E08", count: 2, delay: 0.8 }],
+};

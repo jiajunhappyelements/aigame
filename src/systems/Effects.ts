@@ -1,58 +1,102 @@
 import Phaser from "phaser";
+import { GAME_WIDTH } from "../config/game";
 
-export class Effects {
-  constructor(private readonly scene: Phaser.Scene) {}
+export function floatText(scene: Phaser.Scene, x: number, y: number, str: string, color: number): void {
+  const t = scene.add.text(x, y, str, {
+    fontFamily: "Arial",
+    fontSize: "16px",
+    color: `#${color.toString(16).padStart(6, "0")}`,
+    stroke: "#000000",
+    strokeThickness: 4,
+  });
+  t.setDepth(100);
+  scene.tweens.add({
+    targets: t, y: y - 50, alpha: 0,
+    duration: 900, ease: "Cubic.easeOut", onComplete: () => t.destroy(),
+  });
+}
 
-  floatText(x: number, y: number, text: string, color: string) {
-    const label = this.scene.add
-      .text(x, y, text, {
-        fontFamily: "Arial",
-        fontSize: "22px",
-        color,
-        stroke: "#1a2630",
-        strokeThickness: 5
-      })
-      .setOrigin(0.5)
-      .setDepth(60);
-    this.scene.tweens.add({
-      targets: label,
-      y: y - 36,
-      alpha: 0,
-      duration: 720,
-      onComplete: () => label.destroy()
-    });
-  }
+export function impact(scene: Phaser.Scene, x: number, y: number): void {
+  const g = scene.add.graphics().setDepth(80);
+  g.fillStyle(0xf4e842, 0.8);
+  g.fillCircle(x, y, 8);
+  scene.tweens.add({
+    targets: g, alpha: 0, scaleX: 2.5, scaleY: 2.5,
+    duration: 180, ease: "Quad.easeOut", onComplete: () => g.destroy(),
+  });
+}
 
-  impact(x: number, y: number) {
-    const boom = this.scene.add.image(x, y, "impact").setDisplaySize(76, 68).setDepth(30).setAlpha(0.9);
-    this.scene.tweens.add({
-      targets: boom,
-      scale: 1.25,
-      alpha: 0,
-      duration: 260,
-      onComplete: () => boom.destroy()
-    });
-  }
+export function landingBlast(scene: Phaser.Scene, x: number, y: number, radius: number): void {
+  const g = scene.add.graphics().setDepth(79);
+  g.lineStyle(3, 0xf4e842, 0.8);
+  g.strokeCircle(x, y, 10);
+  scene.tweens.add({
+    targets: g, alpha: 0,
+    scaleX: radius / 10, scaleY: radius / 10,
+    duration: 350, ease: "Quad.easeOut", onComplete: () => g.destroy(),
+  });
+}
 
-  frost(x: number, y: number) {
-    const frost = this.scene.add.circle(x, y, 28, 0x8cecff, 0.25).setDepth(18);
-    this.scene.tweens.add({
-      targets: frost,
-      scale: 1.6,
-      alpha: 0,
-      duration: 260,
-      onComplete: () => frost.destroy()
-    });
-  }
+export function exposureFlash(scene: Phaser.Scene, x: number, y: number): void {
+  const g = scene.add.graphics().setDepth(90);
+  g.fillStyle(0xffffff, 1);
+  g.fillCircle(x, y, 30);
+  scene.tweens.add({
+    targets: g, alpha: 0, scaleX: 2, scaleY: 2,
+    duration: 250, ease: "Quad.easeOut", onComplete: () => g.destroy(),
+  });
+}
 
-  landingBlast(x: number, y: number) {
-    const blast = this.scene.add.circle(x, y, 48, 0xffd36a, 0.22).setDepth(17);
-    this.scene.tweens.add({
-      targets: blast,
-      scale: 1.8,
-      alpha: 0,
-      duration: 260,
-      onComplete: () => blast.destroy()
-    });
-  }
+export function frostEffect(scene: Phaser.Scene, x: number, y: number): void {
+  const g = scene.add.graphics().setDepth(80);
+  g.fillStyle(0x8ed8f8, 0.6);
+  g.fillCircle(x, y, 12);
+  scene.tweens.add({
+    targets: g, alpha: 0, scaleX: 1.5, scaleY: 1.5,
+    duration: 400, ease: "Quad.easeOut", onComplete: () => g.destroy(),
+  });
+}
+
+export function burnEffect(scene: Phaser.Scene, x: number, y: number): void {
+  const g = scene.add.graphics().setDepth(80);
+  g.fillStyle(0xff6600, 0.7);
+  g.fillCircle(x, y, 10);
+  scene.tweens.add({
+    targets: g, alpha: 0, scaleX: 1.3, scaleY: 1.3,
+    duration: 300, ease: "Quad.easeOut", onComplete: () => g.destroy(),
+  });
+}
+
+export function healEffect(scene: Phaser.Scene, x: number, y: number): void {
+  const g = scene.add.graphics().setDepth(80);
+  g.fillStyle(0x44ff88, 0.6);
+  g.fillCircle(x, y - 10, 14);
+  scene.tweens.add({
+    targets: g, alpha: 0, y: y - 30,
+    duration: 500, ease: "Quad.easeOut", onComplete: () => g.destroy(),
+  });
+}
+
+export function auraEffect(scene: Phaser.Scene, x: number, y: number, color: number): void {
+  const g = scene.add.graphics().setDepth(7);
+  g.lineStyle(2, color, 0.3);
+  g.strokeCircle(x, y, 48);
+  scene.tweens.add({
+    targets: g, alpha: 0,
+    duration: 800, ease: "Quad.easeOut", onComplete: () => g.destroy(),
+  });
+}
+
+export function coinBounty(scene: Phaser.Scene, x: number, y: number, amount: number): void {
+  const coin = scene.add.circle(x, y, 6, 0xffd700, 1).setDepth(100);
+  const label = scene.add.text(x + 10, y - 5, `+${amount}`, {
+    fontFamily: "Arial", fontSize: "12px", color: "#ffd700",
+    stroke: "#000000", strokeThickness: 3
+  }).setDepth(100);
+  scene.tweens.add({
+    targets: [coin, label],
+    x: GAME_WIDTH - 20, y: 30,
+    duration: 600, ease: "Cubic.easeIn",
+    onComplete: () => { coin.destroy(); label.destroy(); }
+  });
 }

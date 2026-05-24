@@ -1,44 +1,47 @@
-import Phaser from "phaser";
-import { GAME_SIZE, LANES } from "../config/game";
-import { UNIT_SPECS } from "../config/units";
-import type { GameState, UnitKind } from "../types";
-import { FighterFactory } from "../entities/FighterFactory";
-import { Effects } from "./Effects";
+import type { AllyId, GameState } from "../types";
+import { ALLY_SPECS } from "../config/units";
+import { FIELD_LIMITS, GAME_WIDTH, LANES } from "../config/game";
+import { floatText } from "./Effects";
 
 export class SummonSystem {
-  constructor(
-    private readonly state: GameState,
-    private readonly fighterFactory: FighterFactory,
-    private readonly effects: Effects
-  ) {}
+  private gs: GameState;
 
-  summonRandomUnit() {
-    if (this.state.modalOpen) return;
-    if (this.state.pending) {
-      this.effects.floatText(GAME_SIZE.width / 2, LANES.summonY - 70, "先把当前士兵射出去", "#ffdf9a");
-      return;
-    }
-    if (this.state.gold < this.state.summonCost) {
-      this.effects.floatText(GAME_SIZE.width / 2, LANES.summonY - 70, "金币不足", "#ffb3a7");
-      return;
-    }
-    this.state.gold -= this.state.summonCost;
-    this.prepareUnit(this.drawUnitKind());
+  constructor(gs: GameState) {
+    this.gs = gs;
   }
 
-  private drawUnitKind() {
-    if (this.state.summonBag.length === 0) {
-      this.state.summonBag = Phaser.Utils.Array.Shuffle<UnitKind>(["slinger", "archer", "mage"]);
-    }
-    return this.state.summonBag.pop() ?? "slinger";
-  }
+  selectCard(cardId: AllyId, scene: Phaser.Scene): boolean {
+    const spec = ALLY_SPECS[cardId];
 
-  private prepareUnit(kind: UnitKind) {
-    const spec = UNIT_SPECS[kind];
-    const unit = this.fighterFactory.create(LANES.slingX, LANES.summonY - 42, spec.texture, kind, "ally", spec);
-    unit.setDepth(20);
-    unit.launched = false;
-    this.state.pending = unit;
-    this.effects.floatText(LANES.slingX, LANES.summonY - 105, `${spec.name} 准备`, "#d8fbff");
+    // If already pending a different card, cancel and refund
+    if (this.gs.pendingCardId && this.gs.pendingCardId !== cardId) {
+      const prevSpec = ALLY_SPECS[this.gs.pendingCardId];
+      if (prevSpec) {
+        this.gs.stamina += prevSpec.staminaCost;
+      }
+      this.gs.pendingCardId = null;
+      this.gs.dragging = false;
+    }
+
+    if (this.gs.ballActive) return false;
+
+    if (this.gs.stamina < spec.staminaCost) {
+      floatText(scene, GAME_WIDTH / 2, LANES.summonY - 30, "体力不足", 0xff5b4f);
+      return false;
+    }
+
+    if (this.gs.allies.length >= FIELD_LIMITS.maxAllies) {
+      floatText(scene, GAME_WIDTH / 2, LANES.summonY - 30, "已到上场限制", 0xff5b4f);
+      return false;
+    }
+
+    const sameNameCount = this.gs.allies.filter(a => a.id === cardId).length;
+    if (sameNameCount >= spec.maxSameName) {
+      floatText(scene, GAME_WIDTH / 2, LANES.summonY - 30, `已到同名上限(${spec.maxSameName})`, 0xff5b4f);
+      return false;
+    }
+
+    this.gs.stamina -= spec.staminaCost;
+    return true;
   }
 }

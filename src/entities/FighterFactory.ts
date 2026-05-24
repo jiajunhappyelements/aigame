@@ -1,51 +1,61 @@
 import Phaser from "phaser";
-import type { EnemySpec, Fighter, GameState, Team, UnitKind, UnitSpec } from "../types";
+import type { AllyId, AllySpec, EnemyId, EnemySpec, Fighter, GameState, Team } from "../types";
+import { TILE_SIZE } from "../config/game";
 
-export class FighterFactory {
-  constructor(
-    private readonly scene: Phaser.Scene,
-    private readonly state: GameState
-  ) {}
+export function createFighter(
+  scene: Phaser.Scene,
+  id: AllyId | EnemyId,
+  team: Team,
+  x: number,
+  y: number,
+  spec: AllySpec | EnemySpec
+): Fighter {
+  const isAlly = team === "ally";
+  const bodyScale = isAlly ? 0.3 : (spec as EnemySpec).scale ?? 0.2;
+  const container = scene.add.container(x, y) as Fighter;
 
-  create(
-    x: number,
-    y: number,
-    texture: string,
-    kind: UnitKind | EnemySpec["kind"],
-    team: Team,
-    spec: UnitSpec | EnemySpec
-  ): Fighter {
-    const bodyScale = team === "ally" ? 0.2 : (spec as EnemySpec).scale;
-    const container = this.scene.add.container(x, y) as Fighter;
-    const shadow = this.scene.add.ellipse(0, 34, 46, 16, 0x0e1b20, 0.28);
-    const img = this.scene.add.image(0, 0, texture).setScale(bodyScale);
-    const hpBg = this.scene.add.rectangle(0, -42, 44, 5, 0x211d22, 0.9);
-    const hpFg = this.scene.add
-      .rectangle(-22, -42, 44, 5, team === "ally" ? 0x4af06a : 0xff5b4f, 1)
-      .setOrigin(0, 0.5);
-    hpFg.name = "hp";
-    container.add([shadow, img, hpBg, hpFg]);
+  const shadow = scene.add.ellipse(0, 34, 46, 16, 0x0e1b20, 0.28);
+  const img = scene.add.image(0, 0, spec.texture).setScale(bodyScale);
+  const hpBg = scene.add.rectangle(0, -42, 44, 5, 0x211d22, 0.9);
+  const hpFg = scene.add
+    .rectangle(-22, -42, 44, 5, isAlly ? 0x4af06a : 0xff5b4f, 1)
+    .setOrigin(0, 0.5);
+  hpFg.name = "hp";
+  container.add([shadow, img, hpBg, hpFg]);
 
-    const hp = team === "ally" ? spec.hp * this.state.hpMultiplier : spec.hp;
-    container.kind = kind;
-    container.team = team;
-    container.hp = hp;
-    container.maxHp = hp;
-    container.damage =
-      team === "ally" ? spec.damage * this.state.unitDamageMultiplier[kind as UnitKind] : spec.damage;
-    container.range = kind === "archer" ? spec.range * this.state.archerRangeMultiplier : spec.range;
-    container.speed = spec.speed;
-    container.attackCd = team === "ally" ? 760 : 980;
-    container.attackTimer = Phaser.Math.Between(0, 400);
-    if (team === "enemy") container.bounty = (spec as EnemySpec).bounty;
-
-    this.scene.physics.add.existing(container);
-    const body = container.body as Phaser.Physics.Arcade.Body;
-    body.setCircle(22, -22, 12);
-    body.setCollideWorldBounds(false);
-
-    if (team === "ally") this.state.allies.push(container);
-    else this.state.enemies.push(container);
-    return container;
+  const hp = spec.hp;
+  container.id = id;
+  container.kind = id;
+  container.team = team;
+  container.hp = hp;
+  container.maxHp = hp;
+  container.atk = spec.atk;
+  container.range = spec.range;
+  container.speed = spec.moveSpd;
+  container.attackCd = Math.round(1000 / spec.atkSpd);
+  container.attackTimer = Phaser.Math.Between(0, 400);
+  container.launched = false;
+  container.moveMode = spec.moveMode;
+  container.attackType = spec.attackType;
+  container.targeting = isAlly ? (spec as AllySpec).targeting : "base";
+  container.traits = isAlly ? [] : (spec as EnemySpec).traits;
+  container.skill1Level = 0;
+  container.skill2Level = 0;
+  container.slowUntil = 0;
+  container.slowPercent = 0;
+  container.burnUntil = 0;
+  container.burnDps = 0;
+  if (!isAlly) {
+    container.bounty = (spec as EnemySpec).bounty;
   }
+
+  const depth = spec.moveMode === "flying" ? 16 : 8;
+  container.setDepth(depth);
+
+  scene.physics.add.existing(container);
+  const body = container.body as Phaser.Physics.Arcade.Body;
+  body.setCircle(22, -22, 12);
+  body.setCollideWorldBounds(false);
+
+  return container;
 }

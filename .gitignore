@@ -4,3 +4,7 @@ dist/
 *.log
 .env
 .env.*
+bin/
+Thumbs.db
+*.swp
+*.swo

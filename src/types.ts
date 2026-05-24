@@ -1,44 +1,81 @@
-import Phaser from "phaser";
-
-export type UnitKind = "slinger" | "archer" | "mage";
-export type EnemyKind = "goblin" | "ogre";
+export type AllyId = "A01" | "A02" | "A03" | "A04" | "A05" | "A06" | "A07" | "A08" | "A09" | "A10";
+export type EnemyId = "E01" | "E02" | "E03" | "E04" | "E05" | "E06" | "E07" | "E08" | "E09" | "E10";
 export type Team = "ally" | "enemy";
 
+export type SkillDef = {
+  name: string;
+  desc: string;
+  lv1: string;
+  lv2: string;
+  lv3: string;
+};
+
+export type AllySpec = {
+  id: AllyId;
+  name: string;
+  role: string;
+  attackType: "melee" | "ranged";
+  moveMode: "ground" | "flying";
+  unlockLevel: number;
+  hp: number;
+  hpGrowth: number;
+  hpCap: number;
+  atk: number;
+  atkSpd: number;
+  range: number;
+  moveSpd: number;
+  targeting: string;
+  staminaCost: number;
+  maxSameName: number;
+  maxField: number;
+  skill1: SkillDef | null;
+  skill2: SkillDef | null;
+  texture: string;
+  tint: number;
+};
+
+export type EnemySpec = {
+  id: EnemyId;
+  name: string;
+  attackType: "melee" | "ranged";
+  moveMode: "ground" | "flying";
+  unlockLevel: number;
+  hp: number;
+  atk: number;
+  atkSpd: number;
+  moveSpd: number;
+  range: number;
+  traits: string[];
+  traitDesc: string;
+  bounty: number;
+  texture: string;
+  tint: number;
+  scale: number;
+};
+
 export type Fighter = Phaser.GameObjects.Container & {
-  kind: UnitKind | EnemyKind;
+  id: AllyId | EnemyId;
+  kind: AllyId | EnemyId;
   team: Team;
   hp: number;
   maxHp: number;
-  damage: number;
+  atk: number;
   range: number;
   speed: number;
   attackCd: number;
   attackTimer: number;
   launched?: boolean;
   slowUntil?: number;
+  slowPercent?: number;
+  burnUntil?: number;
+  burnDps?: number;
   bounty?: number;
-};
-
-export type UnitSpec = {
-  kind: UnitKind;
-  name: string;
-  hp: number;
-  damage: number;
-  range: number;
-  speed: number;
-  texture: string;
-  tint: number;
-};
-
-export type EnemySpec = {
-  kind: EnemyKind;
-  hp: number;
-  damage: number;
-  range: number;
-  speed: number;
-  bounty: number;
-  texture: string;
-  scale: number;
+  moveMode: "ground" | "flying";
+  attackType: "melee" | "ranged";
+  targeting: string;
+  traits: string[];
+  skill1Level: number;
+  skill2Level: number;
 };
 
 export type SpriteSlice = {
@@ -58,23 +95,32 @@ export type Upgrade = {
 };
 
 export type GameState = {
-  gold: number;
-  castleHp: number;
+  level: number;
   wave: number;
   waveTime: number;
   spawnTimer: number;
+  castleHp: number;
+  castleMaxHp: number;
+  stamina: number;
+  staminaMax: number;
+  staminaRegenTimer: number;
+  gold: number;
   allies: Fighter[];
   enemies: Fighter[];
-  pending?: Fighter;
+  pendingCardId: AllyId | null;
+  pendingBall: Phaser.GameObjects.Container | null;
   dragging: boolean;
   modalOpen: boolean;
-  summonBag: UnitKind[];
-  summonCost: number;
-  upgradeCost: number;
-  unitDamageMultiplier: Record<UnitKind, number>;
+  ballVx: number;
+  ballVy: number;
+  ballActive: boolean;
+  launchCooldown: number;
+  summonCountsThisWave: Record<string, number>;
+  unlockedAllies: AllyId[];
+  unlockedEnemies: EnemyId[];
+  unitDamageMultiplier: number;
   hpMultiplier: number;
-  archerRangeMultiplier: number;
-  mageFreezeMs: number;
   bountyMultiplier: number;
-  launchImpactDamage: number;
+  waveEnemyQueue: { enemyId: EnemyId; delay: number }[];
+  waveEnemyTimer: number;
 };

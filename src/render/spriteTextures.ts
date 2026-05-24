@@ -1,7 +1,8 @@
 import Phaser from "phaser";
 import { SPRITES } from "../config/sprites";
+import { createProceduralTextures } from "../config/proceduralTextures";
 
-export function createSpriteTextures(scene: Phaser.Scene) {
+export function createSpriteTextures(scene: Phaser.Scene): void {
   const source = scene.textures.get("ai-sprite-sheet").getSourceImage() as HTMLImageElement;
   for (const sprite of SPRITES) {
     const canvas = document.createElement("canvas");
@@ -21,4 +22,6 @@ export function createSpriteTextures(scene: Phaser.Scene) {
     ctx.putImageData(img, 0, 0);
     scene.textures.addCanvas(sprite.key, canvas);
   }
+
+  createProceduralTextures(scene);
 }

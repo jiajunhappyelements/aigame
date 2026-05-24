@@ -1,13 +1,13 @@
 import Phaser from "phaser";
-import { GAME_SIZE } from "./config/game";
+import { GAME_WIDTH, GAME_HEIGHT } from "./config/game";
 import { GameScene } from "./scenes/GameScene";
 import "./style.css";
 
 new Phaser.Game({
   type: Phaser.AUTO,
   parent: "game",
-  width: GAME_SIZE.width,
-  height: GAME_SIZE.height,
+  width: GAME_WIDTH,
+  height: GAME_HEIGHT,
   backgroundColor: "#20364a",
   physics: {
     default: "arcade",
