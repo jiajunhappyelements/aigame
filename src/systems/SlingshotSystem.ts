@@ -100,7 +100,7 @@ export class SlingshotSystem {
       const pullDist = Math.sqrt(dx * dx + dy * dy);
       // 重新计算拖拽偏移（与发射方向相反）
       dx = -Math.sin(clampedAngle) * pullDist;
-      dy = -Math.cos(clampedAngle) * pullDist;
+      dy = Math.cos(clampedAngle) * pullDist;
     }
 
     let dist = Math.sqrt(dx * dx + dy * dy);
@@ -258,9 +258,9 @@ export class SlingshotSystem {
   private drawRubberBand(bx: number, by: number): void {
     this.rubberBand.clear();
     this.rubberBand.lineStyle(RUBBER_WIDTH, RUBBER_COLOR, 1);
-    this.rubberBand.moveTo(LANES.slingX - 18, LANES.slingY - 10);
+    this.rubberBand.moveTo(LANES.slingX - 33, LANES.slingY - 2);
     this.rubberBand.lineTo(bx, by);
-    this.rubberBand.lineTo(LANES.slingX + 18, LANES.slingY - 10);
+    this.rubberBand.lineTo(LANES.slingX + 33, LANES.slingY - 2);
     this.rubberBand.strokePath();
   }
 

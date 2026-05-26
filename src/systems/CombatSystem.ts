@@ -53,7 +53,10 @@ export class CombatSystem {
   private processEnemies(dt: number, now: number): void {
     for (const enemy of this.gs.enemies) {
       if (!enemy.active) continue;
-      const allyTarget = this.findEnemyTarget(enemy);
+      let allyTarget = this.findEnemyTarget(enemy);
+      if (allyTarget && allyTarget.y > enemy.y && enemy.y >= CASTLE_ATTACK_LINE) {
+        allyTarget = null;
+      }
       if (allyTarget) {
         const dist = Phaser.Math.Distance.Between(enemy.x, enemy.y, allyTarget.x, allyTarget.y);
         if (dist > enemy.range) {

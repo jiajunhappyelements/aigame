@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { GAME_WIDTH, GAME_HEIGHT, createInitialState, LANES, CASTLE } from "../config/game";
 import { createBackdrop } from "../render/backdrop";
 import { createSpriteTextures } from "../render/spriteTextures";
+import { SPRITE_DEFS } from "../config/sprites";
 import { CombatSystem } from "../systems/CombatSystem";
 import { StaminaSystem } from "../systems/StaminaSystem";
 import { SlingshotSystem } from "../systems/SlingshotSystem";
@@ -28,7 +29,9 @@ export class GameScene extends Phaser.Scene {
   private upgradeSystem!: UpgradeSystem;
 
   preload() {
-    this.load.image("ai-sprite-sheet", "/assets/ai-sprite-sheet-keyed.png");
+    for (const def of SPRITE_DEFS) {
+      this.load.image(def.key, def.path);
+    }
   }
 
   create() {
@@ -64,6 +67,7 @@ export class GameScene extends Phaser.Scene {
 
     this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
       if (this.state.modalOpen) return;
+      if (pointer.x < 56) return;
       this.slingshotSystem.startDrag(pointer);
     });
 

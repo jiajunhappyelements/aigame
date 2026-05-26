@@ -19,6 +19,4 @@ export function createBackdrop(scene: Phaser.Scene): void {
 
   scene.add.circle(slingX - 33, slingY - 2, 7, 0xd7b27c).setDepth(2);
   scene.add.circle(slingX + 33, slingY - 2, 7, 0xd7b27c).setDepth(2);
-  scene.add.line(slingX, slingY, -31, 0, 0, 28, 0xc9965a, 1).setLineWidth(8).setDepth(2);
-  scene.add.line(slingX, slingY, 31, 0, 0, 28, 0xc9965a, 1).setLineWidth(8).setDepth(2);
 }

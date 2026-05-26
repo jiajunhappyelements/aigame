@@ -78,12 +78,9 @@ export type Fighter = Phaser.GameObjects.Container & {
   skill2Level: number;
 };
 
-export type SpriteSlice = {
+export type SpriteDef = {
   key: string;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
+  path: string;
 };
 
 export type Upgrade = {

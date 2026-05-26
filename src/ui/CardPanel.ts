@@ -69,15 +69,16 @@ export class CardPanel {
       .setStrokeStyle(2, 0xffffff);
 
     const icon = this.scene.add.image(0, -4, spec.texture).setDisplaySize(28, 28);
-    const remainText = this.scene.add.text(CARD_W / 2 - 2, -CARD_H / 2 + 2, `${spec.maxSameName}`, {
+    const costText = this.scene.add.text(CARD_W / 2 - 2, -CARD_H / 2 + 2, `${spec.staminaCost}`, {
       fontFamily: "Arial", fontSize: "10px", color: "#ffffff",
       stroke: "#000000", strokeThickness: 3
     }).setOrigin(1, 0);
-    remainText.name = "remain";
-    const costText = this.scene.add.text(CARD_W / 2 - 2, CARD_H / 2 - 2, `${spec.staminaCost}`, {
+    costText.name = "cost";
+    const remainText = this.scene.add.text(CARD_W / 2 - 2, CARD_H / 2 - 2, `${spec.maxSameName}`, {
       fontFamily: "Arial", fontSize: "10px", color: "#4af0a0",
       stroke: "#000000", strokeThickness: 3
     }).setOrigin(1, 1);
+    remainText.name = "remain";
     const nameText = this.scene.add.text(0, 14, spec.name.substring(0, 2), {
       fontFamily: "Arial", fontSize: "10px", color: "#ffffff",
       stroke: "#000000", strokeThickness: 2
@@ -104,7 +105,10 @@ export class CardPanel {
       const sameNameCount = this.gs.allies.filter(a => a.id === allyId && a.active).length;
       const remain = spec.maxSameName - sameNameCount;
       const remainObj = card.getByName("remain") as Phaser.GameObjects.Text;
-      if (remainObj) remainObj.setText(`${remain}`);
+      if (remainObj) {
+        remainObj.setText(`${remain}`);
+        remainObj.setColor(remain > 0 ? "#4af0a0" : "#ff5b4f");
+      }
 
       const canAfford = curSt >= spec.staminaCost;
       const atFieldLimit = this.gs.allies.filter(a => a.active).length >= FIELD_LIMITS.maxAllies;
