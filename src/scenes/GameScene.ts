@@ -2,6 +2,8 @@ import Phaser from "phaser";
 import { GAME_WIDTH, GAME_HEIGHT, createInitialState, LANES, CASTLE } from "../config/game";
 import { createBackdrop } from "../render/backdrop";
 import { createSpriteTextures } from "../render/spriteTextures";
+import { createConfiguredAnimations } from "../render/animations";
+import { ANIMATION_ATLAS } from "../config/animations";
 import { SPRITE_DEFS } from "../config/sprites";
 import { CombatSystem } from "../systems/CombatSystem";
 import { StaminaSystem } from "../systems/StaminaSystem";
@@ -32,11 +34,13 @@ export class GameScene extends Phaser.Scene {
     for (const def of SPRITE_DEFS) {
       this.load.image(def.key, def.path);
     }
+    this.load.multiatlas(ANIMATION_ATLAS.key, ANIMATION_ATLAS.dataPath, ANIMATION_ATLAS.texturePath);
   }
 
   create() {
     this.state = createInitialState();
     createSpriteTextures(this);
+    createConfiguredAnimations(this);
     createBackdrop(this);
 
     this.staminaSystem = new StaminaSystem(this.state);

@@ -1,0 +1,188 @@
+{
+	"textures": [
+		{
+			"image": "animations.png",
+			"format": "RGBA8888",
+			"size": {
+				"w": 412,
+				"h": 240
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "allies/A01/idle/idle_00.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 96,
+						"h": 112
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 96,
+						"h": 112
+					},
+					"frame": {
+						"x": 5,
+						"y": 5,
+						"w": 96,
+						"h": 112
+					}
+				},
+				{
+					"filename": "allies/A01/idle/idle_01.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 96,
+						"h": 112
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 96,
+						"h": 112
+					},
+					"frame": {
+						"x": 5,
+						"y": 123,
+						"w": 96,
+						"h": 112
+					}
+				},
+				{
+					"filename": "allies/A01/idle/idle_02.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 96,
+						"h": 112
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 96,
+						"h": 112
+					},
+					"frame": {
+						"x": 107,
+						"y": 5,
+						"w": 96,
+						"h": 112
+					}
+				},
+				{
+					"filename": "allies/A01/idle/idle_03.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 96,
+						"h": 112
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 96,
+						"h": 112
+					},
+					"frame": {
+						"x": 107,
+						"y": 123,
+						"w": 96,
+						"h": 112
+					}
+				},
+				{
+					"filename": "enemies/E01/walk/walk_00.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 96,
+						"h": 112
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 96,
+						"h": 112
+					},
+					"frame": {
+						"x": 209,
+						"y": 5,
+						"w": 96,
+						"h": 112
+					}
+				},
+				{
+					"filename": "enemies/E01/walk/walk_01.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 96,
+						"h": 112
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 96,
+						"h": 112
+					},
+					"frame": {
+						"x": 209,
+						"y": 123,
+						"w": 96,
+						"h": 112
+					}
+				},
+				{
+					"filename": "enemies/E01/walk/walk_02.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 96,
+						"h": 112
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 96,
+						"h": 112
+					},
+					"frame": {
+						"x": 311,
+						"y": 5,
+						"w": 96,
+						"h": 112
+					}
+				},
+				{
+					"filename": "enemies/E01/walk/walk_03.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 96,
+						"h": 112
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 96,
+						"h": 112
+					},
+					"frame": {
+						"x": 311,
+						"y": 123,
+						"w": 96,
+						"h": 112
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:b4bb5016c4abfa119cd1cf05161d698e:84599f7aaab1b9a5828224173c57c50f:bb447c4d1c842b0fc77df58e34d69c1d$"
+	}
+}

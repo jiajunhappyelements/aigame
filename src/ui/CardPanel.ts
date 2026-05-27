@@ -63,7 +63,6 @@ export class CardPanel {
   private createCard(x: number, y: number, allyId: AllyId, spec: typeof ALLY_SPECS[AllyId]): Phaser.GameObjects.Container {
     const card = this.scene.add.container(x, y).setDepth(42);
     card.setSize(CARD_W, CARD_H);
-    card.setInteractive(new Phaser.Geom.Rectangle(-CARD_W / 2, -CARD_H / 2, CARD_W, CARD_H), Phaser.Geom.Rectangle.Contains);
 
     const bgRect = this.scene.add.rectangle(0, 0, CARD_W, CARD_H, spec.tint, 0.7)
       .setStrokeStyle(2, 0xffffff);
@@ -84,12 +83,14 @@ export class CardPanel {
       stroke: "#000000", strokeThickness: 2
     }).setOrigin(0.5);
 
-    card.add([bgRect, icon, remainText, costText, nameText]);
-
-    card.on("pointerdown", () => {
+    const hitZone = this.scene.add.zone(0, 0, CARD_W, CARD_H).setInteractive({ useHandCursor: true });
+    hitZone.on("pointerdown", () => {
       if (this.gs.ballActive) return;
       this.onSelectCard(allyId);
     });
+
+    // Keep the hit zone last so art and labels never intercept selecting the card.
+    card.add([bgRect, icon, remainText, costText, nameText, hitZone]);
 
     return card;
   }

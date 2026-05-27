@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc && vite build",
-    "preview": "vite preview --host 0.0.0.0"
+    "preview": "vite preview --host 0.0.0.0",
+    "assets:animations": "TexturePacker --format phaser --sheet public/assets/atlas/animations.png --data public/assets/atlas/animations.json --texturepath animations.png --algorithm MaxRects --max-size 2048 --size-constraints AnySize --trim-mode None --shape-padding 4 --border-padding 4 --extrude 1 --disable-rotation --force-publish public/assets/animation-source"
   },
   "dependencies": {
     "phaser": "^3.90.0"

@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import type { AllyId, AllySpec, EnemyId, EnemySpec, Fighter, GameState, Team } from "../types";
 import { TILE_SIZE } from "../config/game";
+import { ANIMATION_ATLAS, getFighterAnimation } from "../config/animations";
 
 export function createFighter(
   scene: Phaser.Scene,
@@ -13,9 +14,15 @@ export function createFighter(
   const isAlly = team === "ally";
   const bodyScale = isAlly ? 0.3 : (spec as EnemySpec).scale ?? 0.2;
   const container = scene.add.container(x, y) as Fighter;
+  const animation = getFighterAnimation(id);
 
   const shadow = scene.add.ellipse(0, 34, 46, 16, 0x0e1b20, 0.28);
-  const img = scene.add.image(0, 0, spec.texture).setScale(bodyScale);
+  const img = animation
+    ? scene.add
+        .sprite(0, 0, ANIMATION_ATLAS.key, animation.frames[0])
+        .setDisplaySize(animation.displayWidth, animation.displayHeight)
+        .play(animation.animationKey)
+    : scene.add.image(0, 0, spec.texture).setScale(bodyScale);
   const hpBg = scene.add.rectangle(0, -42, 44, 5, 0x211d22, 0.9);
   const hpFg = scene.add
     .rectangle(-22, -42, 44, 5, isAlly ? 0x4af06a : 0xff5b4f, 1)

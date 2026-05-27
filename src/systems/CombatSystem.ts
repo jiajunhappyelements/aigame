@@ -198,14 +198,14 @@ export class CombatSystem {
     }
   }
 
-  applyDefensiveReductions(dmg: number, target: Fighter, isAllyAttacking: boolean): number {
+  applyDefensiveReductions(dmg: number, target: Fighter, attackerIsAlly: boolean): number {
     let result = dmg;
     if (target.traits?.includes("heavy")) {
       result = Math.round(result * (1 - this.getHeavyReduction(target)));
     }
     const knightRed = this.getKnightReduction(target);
     if (knightRed > 0) result = Math.round(result * (1 - knightRed));
-    if (isAllyAttacking) {
+    if (!attackerIsAlly && target.team === "ally") {
       const guardianRed = this.getGuardianReductionForAlly(target);
       if (guardianRed > 0) result = Math.round(result * (1 - guardianRed));
     }
@@ -296,8 +296,9 @@ export class CombatSystem {
       if (ally === target || !ally.active) continue;
       const d = Phaser.Math.Distance.Between(target.x, target.y, ally.x, ally.y);
       if (d < 96) {
-        ally.hp -= splashDmg;
-        floatText(this.scene, ally.x, ally.y - 20, `-${splashDmg}`, 0xff5b4f);
+        const reduced = this.applyDefensiveReductions(splashDmg, ally, false);
+        ally.hp -= reduced;
+        floatText(this.scene, ally.x, ally.y - 20, `-${reduced}`, 0xff5b4f);
       }
     }
   }

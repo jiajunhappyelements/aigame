@@ -83,6 +83,14 @@ export type SpriteDef = {
   path: string;
 };
 
+export type FighterAnimationDef = {
+  animationKey: string;
+  frames: string[];
+  frameRate: number;
+  displayWidth: number;
+  displayHeight: number;
+};
+
 export type Upgrade = {
   id: string;
   title: string;
