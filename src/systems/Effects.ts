@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { GAME_WIDTH } from "../config/game";
+import { ANIMATION_ATLAS, getEffectAnimation } from "../config/animations";
 
 export function floatText(scene: Phaser.Scene, x: number, y: number, str: string, color: number): void {
   const t = scene.add.text(x, y, str, {
@@ -27,6 +28,17 @@ export function impact(scene: Phaser.Scene, x: number, y: number): void {
 }
 
 export function landingBlast(scene: Phaser.Scene, x: number, y: number, radius: number): void {
+  const animation = getEffectAnimation("landing-impact");
+  if (animation) {
+    const sprite = scene.add
+      .sprite(x, y, ANIMATION_ATLAS.key, animation.frames[0])
+      .setDisplaySize(animation.displayWidth, animation.displayHeight)
+      .setDepth(animation.depth);
+    sprite.play(animation.animationKey);
+    sprite.once(Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + animation.animationKey, () => sprite.destroy());
+    return;
+  }
+
   const g = scene.add.graphics().setDepth(79);
   g.lineStyle(3, 0xf4e842, 0.8);
   g.strokeCircle(x, y, 10);

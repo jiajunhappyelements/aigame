@@ -83,12 +83,22 @@ export type SpriteDef = {
   path: string;
 };
 
-export type FighterAnimationDef = {
+export type AnimationClipDef = {
   animationKey: string;
   frames: string[];
   frameRate: number;
   displayWidth: number;
   displayHeight: number;
+  repeat?: number;
+};
+
+export type FighterAnimationDef = {
+  base: AnimationClipDef;
+  attack?: AnimationClipDef;
+};
+
+export type EffectAnimationDef = AnimationClipDef & {
+  depth: number;
 };
 
 export type Upgrade = {

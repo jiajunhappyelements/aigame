@@ -1,4 +1,4 @@
-import type { AllyId, EnemyId, FighterAnimationDef } from "../types";
+import type { AllyId, EnemyId, EffectAnimationDef, FighterAnimationDef } from "../types";
 
 export const ANIMATION_ATLAS = {
   key: "animation-atlas",
@@ -11,21 +11,56 @@ const sequence = (path: string, action: string, count: number): string[] =>
 
 export const FIGHTER_ANIMATIONS: Partial<Record<AllyId | EnemyId, FighterAnimationDef>> = {
   A01: {
-    animationKey: "A01-idle",
-    frames: sequence("allies/A01/idle", "idle", 4),
-    frameRate: 5,
-    displayWidth: 72,
-    displayHeight: 84,
+    base: {
+      animationKey: "A01-idle",
+      frames: sequence("allies/A01/idle", "idle", 4),
+      frameRate: 5,
+      displayWidth: 72,
+      displayHeight: 84,
+      repeat: -1,
+    },
+    attack: {
+      animationKey: "A01-attack",
+      frames: sequence("allies/A01/attack", "attack", 4),
+      frameRate: 12,
+      displayWidth: 180,
+      displayHeight: 84,
+    },
   },
   E01: {
-    animationKey: "E01-walk",
-    frames: sequence("enemies/E01/walk", "walk", 4),
-    frameRate: 7,
-    displayWidth: 60,
-    displayHeight: 70,
+    base: {
+      animationKey: "E01-walk",
+      frames: sequence("enemies/E01/walk", "walk", 4),
+      frameRate: 7,
+      displayWidth: 60,
+      displayHeight: 70,
+      repeat: -1,
+    },
+    attack: {
+      animationKey: "E01-attack",
+      frames: sequence("enemies/E01/attack", "attack", 4),
+      frameRate: 12,
+      displayWidth: 100,
+      displayHeight: 80,
+    },
+  },
+};
+
+export const EFFECT_ANIMATIONS: Record<string, EffectAnimationDef> = {
+  "landing-impact": {
+    animationKey: "landing-impact",
+    frames: sequence("effects/landing-impact", "impact", 4),
+    frameRate: 14,
+    displayWidth: 132,
+    displayHeight: 88,
+    depth: 82,
   },
 };
 
 export function getFighterAnimation(id: AllyId | EnemyId): FighterAnimationDef | undefined {
   return FIGHTER_ANIMATIONS[id];
+}
+
+export function getEffectAnimation(key: string): EffectAnimationDef | undefined {
+  return EFFECT_ANIMATIONS[key];
 }

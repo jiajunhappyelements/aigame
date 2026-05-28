@@ -3,6 +3,7 @@ import type { Fighter, GameState } from "../types";
 import { ALLY_SPECS } from "../config/units";
 import { CASTLE, GAME_WIDTH } from "../config/game";
 import { impact, floatText, frostEffect, burnEffect, healEffect, auraEffect, coinBounty } from "./Effects";
+import { playFighterAttackAnimation } from "../render/animations";
 
 const CRIT_CHANCE = 0.05;
 const CRIT_MULT = 1.5;
@@ -170,6 +171,7 @@ export class CombatSystem {
   }
 
   private allyAttack(ally: Fighter, target: Fighter, now: number): void {
+    playFighterAttackAnimation(ally);
     let dmg = ally.atk * this.gs.unitDamageMultiplier;
     const spec = ALLY_SPECS[ally.id as keyof typeof ALLY_SPECS];
     if (spec) {
@@ -186,6 +188,7 @@ export class CombatSystem {
   }
 
   private enemyAttack(enemy: Fighter, target: Fighter, now: number): void {
+    playFighterAttackAnimation(enemy);
     let dmg = enemy.atk;
     if (this.hasCommandBuff()) dmg = Math.round(dmg * 1.1);
     dmg = this.applyDefensiveReductions(dmg, target, false);
