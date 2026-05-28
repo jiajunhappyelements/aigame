@@ -96,6 +96,43 @@ def largest_component_mask(image: Image.Image) -> Image.Image:
     return mask
 
 
+def remove_small_components(image: Image.Image, min_area: int) -> Image.Image:
+    if min_area <= 0:
+        return image
+
+    alpha = image.getchannel("A")
+    source = alpha.load()
+    width, height = image.size
+    seen: set[tuple[int, int]] = set()
+    remove: list[tuple[int, int]] = []
+
+    for y in range(height):
+        for x in range(width):
+            if source[x, y] == 0 or (x, y) in seen:
+                continue
+            component: list[tuple[int, int]] = []
+            queue: deque[tuple[int, int]] = deque([(x, y)])
+            seen.add((x, y))
+            while queue:
+                cx, cy = queue.popleft()
+                component.append((cx, cy))
+                for nx, ny in ((cx + 1, cy), (cx - 1, cy), (cx, cy + 1), (cx, cy - 1)):
+                    if 0 <= nx < width and 0 <= ny < height and (nx, ny) not in seen and source[nx, ny] > 0:
+                        seen.add((nx, ny))
+                        queue.append((nx, ny))
+            if len(component) < min_area:
+                remove.extend(component)
+
+    if not remove:
+        return image
+
+    cleaned = image.copy()
+    pixels = cleaned.load()
+    for x, y in remove:
+        pixels[x, y] = (0, 0, 0, 0)
+    return cleaned
+
+
 def iter_cells(strip: Image.Image, count: int) -> Iterable[Image.Image]:
     cell_width = strip.width // count
     for index in range(count):
@@ -161,12 +198,14 @@ def main() -> None:
     parser.add_argument("--key-threshold", type=int, default=72)
     parser.add_argument("--keep-components", choices=("largest", "all"), default="largest")
     parser.add_argument("--keep-magenta-fringe", action="store_true")
+    parser.add_argument("--min-component-area", type=int, default=0, help="Drop isolated alpha islands smaller than this")
     args = parser.parse_args()
 
     strip = Image.open(args.input)
     frames = [remove_key(cell, args.key, args.key_threshold) for cell in iter_cells(strip, args.count)]
     if not args.keep_magenta_fringe:
         frames = [remove_magenta_fringe(frame) for frame in frames]
+    frames = [remove_small_components(frame, args.min_component_area) for frame in frames]
     normalized = normalize_frames(
         frames,
         args.canvas,

@@ -9,92 +9,58 @@ export const ANIMATION_ATLAS = {
 const sequence = (path: string, action: string, count: number): string[] =>
   Array.from({ length: count }, (_, index) => `${path}/${action}_${String(index).padStart(2, "0")}.png`);
 
+function fighter(
+  id: AllyId | EnemyId,
+  baseAction: string,
+  baseWidth: number,
+  baseHeight: number,
+  baseFrameRate: number,
+  attackAction: string,
+  attackWidth: number,
+  attackHeight: number,
+): FighterAnimationDef {
+  const group = id.startsWith("A") ? "allies" : "enemies";
+
+  return {
+    base: {
+      animationKey: `${id}-${baseAction}`,
+      frames: sequence(`${group}/${id}/${baseAction}`, baseAction, 4),
+      frameRate: baseFrameRate,
+      displayWidth: baseWidth,
+      displayHeight: baseHeight,
+      repeat: -1,
+    },
+    attack: {
+      animationKey: `${id}-${attackAction}`,
+      frames: sequence(`${group}/${id}/${attackAction}`, attackAction, 4),
+      frameRate: 12,
+      displayWidth: attackWidth,
+      displayHeight: attackHeight,
+    },
+  };
+}
+
 export const FIGHTER_ANIMATIONS: Partial<Record<AllyId | EnemyId, FighterAnimationDef>> = {
-  A01: {
-    base: {
-      animationKey: "A01-idle",
-      frames: sequence("allies/A01/idle", "idle", 4),
-      frameRate: 5,
-      displayWidth: 72,
-      displayHeight: 84,
-      repeat: -1,
-    },
-    attack: {
-      animationKey: "A01-attack",
-      frames: sequence("allies/A01/attack", "attack", 4),
-      frameRate: 12,
-      displayWidth: 180,
-      displayHeight: 84,
-    },
-  },
-  A02: {
-    base: {
-      animationKey: "A02-idle",
-      frames: sequence("allies/A02/idle", "idle", 4),
-      frameRate: 5,
-      displayWidth: 72,
-      displayHeight: 84,
-      repeat: -1,
-    },
-    attack: {
-      animationKey: "A02-attack",
-      frames: sequence("allies/A02/attack", "attack", 4),
-      frameRate: 12,
-      displayWidth: 168,
-      displayHeight: 96,
-    },
-  },
-  A03: {
-    base: {
-      animationKey: "A03-idle",
-      frames: sequence("allies/A03/idle", "idle", 4),
-      frameRate: 5,
-      displayWidth: 72,
-      displayHeight: 84,
-      repeat: -1,
-    },
-    attack: {
-      animationKey: "A03-attack",
-      frames: sequence("allies/A03/attack", "attack", 4),
-      frameRate: 12,
-      displayWidth: 168,
-      displayHeight: 96,
-    },
-  },
-  E01: {
-    base: {
-      animationKey: "E01-walk",
-      frames: sequence("enemies/E01/walk", "walk", 4),
-      frameRate: 7,
-      displayWidth: 60,
-      displayHeight: 70,
-      repeat: -1,
-    },
-    attack: {
-      animationKey: "E01-attack",
-      frames: sequence("enemies/E01/attack", "attack", 4),
-      frameRate: 12,
-      displayWidth: 100,
-      displayHeight: 80,
-    },
-  },
-  E02: {
-    base: {
-      animationKey: "E02-walk",
-      frames: sequence("enemies/E02/walk", "walk", 4),
-      frameRate: 7,
-      displayWidth: 60,
-      displayHeight: 70,
-      repeat: -1,
-    },
-    attack: {
-      animationKey: "E02-attack",
-      frames: sequence("enemies/E02/attack", "attack", 4),
-      frameRate: 12,
-      displayWidth: 120,
-      displayHeight: 80,
-    },
-  },
+  A01: fighter("A01", "idle", 72, 84, 5, "attack", 180, 84),
+  A02: fighter("A02", "idle", 72, 84, 5, "attack", 168, 96),
+  A03: fighter("A03", "idle", 72, 84, 5, "attack", 168, 96),
+  A04: fighter("A04", "idle", 72, 84, 5, "attack", 168, 96),
+  A05: fighter("A05", "fly", 58, 58, 8, "attack", 96, 58),
+  A06: fighter("A06", "idle", 72, 84, 6, "attack", 126, 84),
+  A07: fighter("A07", "fly", 112, 78, 7, "attack", 146, 78),
+  A08: fighter("A08", "idle", 72, 84, 5, "attack", 168, 96),
+  A09: fighter("A09", "fly", 120, 84, 7, "attack", 168, 96),
+  A10: fighter("A10", "idle", 72, 84, 5, "attack", 168, 96),
+  E01: fighter("E01", "walk", 60, 70, 7, "attack", 100, 80),
+  E02: fighter("E02", "walk", 60, 70, 7, "attack", 120, 80),
+  E03: fighter("E03", "walk", 70, 80, 6, "attack", 140, 90),
+  E04: fighter("E04", "fly", 58, 58, 8, "attack", 96, 58),
+  E05: fighter("E05", "float", 60, 70, 7, "attack", 100, 80),
+  E06: fighter("E06", "fly", 58, 58, 8, "attack", 96, 58),
+  E07: fighter("E07", "fly", 90, 78, 7, "attack", 134, 78),
+  E08: fighter("E08", "walk", 80, 90, 6, "attack", 160, 100),
+  E09: fighter("E09", "fly", 124, 90, 7, "attack", 180, 90),
+  E10: fighter("E10", "walk", 100, 112, 6, "attack", 200, 122),
 };
 
 export const EFFECT_ANIMATIONS: Record<string, EffectAnimationDef> = {
