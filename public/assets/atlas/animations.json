@@ -4,32 +4,11 @@
 			"image": "animations.png",
 			"format": "RGBA8888",
 			"size": {
-				"w": 1664,
-				"h": 256
+				"w": 978,
+				"h": 1012
 			},
 			"scale": 1,
 			"frames": [
-				{
-					"filename": "effects/landing-impact/impact_00.png",
-					"rotated": false,
-					"trimmed": false,
-					"sourceSize": {
-						"w": 192,
-						"h": 128
-					},
-					"spriteSourceSize": {
-						"x": 0,
-						"y": 0,
-						"w": 192,
-						"h": 128
-					},
-					"frame": {
-						"x": 5,
-						"y": 5,
-						"w": 192,
-						"h": 128
-					}
-				},
 				{
 					"filename": "allies/A01/attack/attack_00.png",
 					"rotated": false,
@@ -46,30 +25,9 @@
 					},
 					"frame": {
 						"x": 5,
-						"y": 139,
+						"y": 5,
 						"w": 240,
 						"h": 112
-					}
-				},
-				{
-					"filename": "effects/landing-impact/impact_01.png",
-					"rotated": false,
-					"trimmed": false,
-					"sourceSize": {
-						"w": 192,
-						"h": 128
-					},
-					"spriteSourceSize": {
-						"x": 0,
-						"y": 0,
-						"w": 192,
-						"h": 128
-					},
-					"frame": {
-						"x": 203,
-						"y": 5,
-						"w": 192,
-						"h": 128
 					}
 				},
 				{
@@ -87,31 +45,10 @@
 						"h": 112
 					},
 					"frame": {
-						"x": 251,
-						"y": 139,
+						"x": 5,
+						"y": 123,
 						"w": 240,
 						"h": 112
-					}
-				},
-				{
-					"filename": "effects/landing-impact/impact_02.png",
-					"rotated": false,
-					"trimmed": false,
-					"sourceSize": {
-						"w": 192,
-						"h": 128
-					},
-					"spriteSourceSize": {
-						"x": 0,
-						"y": 0,
-						"w": 192,
-						"h": 128
-					},
-					"frame": {
-						"x": 401,
-						"y": 5,
-						"w": 192,
-						"h": 128
 					}
 				},
 				{
@@ -129,31 +66,10 @@
 						"h": 112
 					},
 					"frame": {
-						"x": 497,
-						"y": 139,
+						"x": 251,
+						"y": 5,
 						"w": 240,
 						"h": 112
-					}
-				},
-				{
-					"filename": "effects/landing-impact/impact_03.png",
-					"rotated": false,
-					"trimmed": false,
-					"sourceSize": {
-						"w": 192,
-						"h": 128
-					},
-					"spriteSourceSize": {
-						"x": 0,
-						"y": 0,
-						"w": 192,
-						"h": 128
-					},
-					"frame": {
-						"x": 599,
-						"y": 5,
-						"w": 192,
-						"h": 128
 					}
 				},
 				{
@@ -171,51 +87,177 @@
 						"h": 112
 					},
 					"frame": {
-						"x": 743,
-						"y": 139,
+						"x": 5,
+						"y": 241,
 						"w": 240,
 						"h": 112
 					}
 				},
 				{
-					"filename": "enemies/E01/attack/attack_00.png",
+					"filename": "allies/A02/attack/attack_00.png",
 					"rotated": false,
 					"trimmed": false,
 					"sourceSize": {
-						"w": 160,
+						"w": 224,
 						"h": 128
 					},
 					"spriteSourceSize": {
 						"x": 0,
 						"y": 0,
-						"w": 160,
+						"w": 224,
 						"h": 128
 					},
 					"frame": {
-						"x": 797,
-						"y": 5,
-						"w": 160,
+						"x": 251,
+						"y": 123,
+						"w": 224,
 						"h": 128
 					}
 				},
 				{
-					"filename": "enemies/E01/attack/attack_01.png",
+					"filename": "allies/A02/attack/attack_01.png",
 					"rotated": false,
 					"trimmed": false,
 					"sourceSize": {
-						"w": 160,
+						"w": 224,
 						"h": 128
 					},
 					"spriteSourceSize": {
 						"x": 0,
 						"y": 0,
-						"w": 160,
+						"w": 224,
 						"h": 128
 					},
 					"frame": {
-						"x": 963,
+						"x": 5,
+						"y": 359,
+						"w": 224,
+						"h": 128
+					}
+				},
+				{
+					"filename": "allies/A02/attack/attack_02.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 224,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 224,
+						"h": 128
+					},
+					"frame": {
+						"x": 5,
+						"y": 493,
+						"w": 224,
+						"h": 128
+					}
+				},
+				{
+					"filename": "allies/A02/attack/attack_03.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 224,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 224,
+						"h": 128
+					},
+					"frame": {
+						"x": 5,
+						"y": 627,
+						"w": 224,
+						"h": 128
+					}
+				},
+				{
+					"filename": "allies/A03/attack/attack_00.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 224,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 224,
+						"h": 128
+					},
+					"frame": {
+						"x": 5,
+						"y": 761,
+						"w": 224,
+						"h": 128
+					}
+				},
+				{
+					"filename": "allies/A03/attack/attack_01.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 224,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 224,
+						"h": 128
+					},
+					"frame": {
+						"x": 497,
 						"y": 5,
-						"w": 160,
+						"w": 224,
+						"h": 128
+					}
+				},
+				{
+					"filename": "allies/A03/attack/attack_02.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 224,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 224,
+						"h": 128
+					},
+					"frame": {
+						"x": 727,
+						"y": 5,
+						"w": 224,
+						"h": 128
+					}
+				},
+				{
+					"filename": "allies/A03/attack/attack_03.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 224,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 224,
+						"h": 128
+					},
+					"frame": {
+						"x": 251,
+						"y": 257,
+						"w": 224,
 						"h": 128
 					}
 				},
@@ -234,8 +276,8 @@
 						"h": 112
 					},
 					"frame": {
-						"x": 989,
-						"y": 139,
+						"x": 5,
+						"y": 895,
 						"w": 96,
 						"h": 112
 					}
@@ -255,10 +297,220 @@
 						"h": 112
 					},
 					"frame": {
-						"x": 1091,
-						"y": 139,
+						"x": 107,
+						"y": 895,
 						"w": 96,
 						"h": 112
+					}
+				},
+				{
+					"filename": "effects/landing-impact/impact_00.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 192,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 192,
+						"h": 128
+					},
+					"frame": {
+						"x": 481,
+						"y": 139,
+						"w": 192,
+						"h": 128
+					}
+				},
+				{
+					"filename": "effects/landing-impact/impact_01.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 192,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 192,
+						"h": 128
+					},
+					"frame": {
+						"x": 679,
+						"y": 139,
+						"w": 192,
+						"h": 128
+					}
+				},
+				{
+					"filename": "effects/landing-impact/impact_02.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 192,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 192,
+						"h": 128
+					},
+					"frame": {
+						"x": 235,
+						"y": 391,
+						"w": 192,
+						"h": 128
+					}
+				},
+				{
+					"filename": "effects/landing-impact/impact_03.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 192,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 192,
+						"h": 128
+					},
+					"frame": {
+						"x": 235,
+						"y": 525,
+						"w": 192,
+						"h": 128
+					}
+				},
+				{
+					"filename": "enemies/E02/attack/attack_00.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 192,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 192,
+						"h": 128
+					},
+					"frame": {
+						"x": 235,
+						"y": 659,
+						"w": 192,
+						"h": 128
+					}
+				},
+				{
+					"filename": "enemies/E02/attack/attack_01.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 192,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 192,
+						"h": 128
+					},
+					"frame": {
+						"x": 481,
+						"y": 273,
+						"w": 192,
+						"h": 128
+					}
+				},
+				{
+					"filename": "enemies/E02/attack/attack_02.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 192,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 192,
+						"h": 128
+					},
+					"frame": {
+						"x": 679,
+						"y": 273,
+						"w": 192,
+						"h": 128
+					}
+				},
+				{
+					"filename": "enemies/E02/attack/attack_03.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 192,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 192,
+						"h": 128
+					},
+					"frame": {
+						"x": 235,
+						"y": 793,
+						"w": 192,
+						"h": 128
+					}
+				},
+				{
+					"filename": "enemies/E01/attack/attack_00.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 160,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 160,
+						"h": 128
+					},
+					"frame": {
+						"x": 433,
+						"y": 407,
+						"w": 160,
+						"h": 128
+					}
+				},
+				{
+					"filename": "enemies/E01/attack/attack_01.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 160,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 160,
+						"h": 128
+					},
+					"frame": {
+						"x": 433,
+						"y": 541,
+						"w": 160,
+						"h": 128
 					}
 				},
 				{
@@ -276,8 +528,29 @@
 						"h": 128
 					},
 					"frame": {
-						"x": 1129,
-						"y": 5,
+						"x": 599,
+						"y": 407,
+						"w": 160,
+						"h": 128
+					}
+				},
+				{
+					"filename": "enemies/E01/attack/attack_03.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 160,
+						"h": 128
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 160,
+						"h": 128
+					},
+					"frame": {
+						"x": 433,
+						"y": 675,
 						"w": 160,
 						"h": 128
 					}
@@ -297,31 +570,10 @@
 						"h": 112
 					},
 					"frame": {
-						"x": 1193,
-						"y": 139,
+						"x": 599,
+						"y": 541,
 						"w": 96,
 						"h": 112
-					}
-				},
-				{
-					"filename": "enemies/E01/attack/attack_03.png",
-					"rotated": false,
-					"trimmed": false,
-					"sourceSize": {
-						"w": 160,
-						"h": 128
-					},
-					"spriteSourceSize": {
-						"x": 0,
-						"y": 0,
-						"w": 160,
-						"h": 128
-					},
-					"frame": {
-						"x": 1295,
-						"y": 5,
-						"w": 160,
-						"h": 128
 					}
 				},
 				{
@@ -339,8 +591,176 @@
 						"h": 112
 					},
 					"frame": {
-						"x": 1295,
+						"x": 765,
+						"y": 407,
+						"w": 96,
+						"h": 112
+					}
+				},
+				{
+					"filename": "allies/A02/idle/idle_00.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 96,
+						"h": 112
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 96,
+						"h": 112
+					},
+					"frame": {
+						"x": 433,
+						"y": 809,
+						"w": 96,
+						"h": 112
+					}
+				},
+				{
+					"filename": "allies/A02/idle/idle_01.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 96,
+						"h": 112
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 96,
+						"h": 112
+					},
+					"frame": {
+						"x": 599,
+						"y": 659,
+						"w": 96,
+						"h": 112
+					}
+				},
+				{
+					"filename": "allies/A02/idle/idle_02.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 96,
+						"h": 112
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 96,
+						"h": 112
+					},
+					"frame": {
+						"x": 877,
 						"y": 139,
+						"w": 96,
+						"h": 112
+					}
+				},
+				{
+					"filename": "allies/A02/idle/idle_03.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 96,
+						"h": 112
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 96,
+						"h": 112
+					},
+					"frame": {
+						"x": 877,
+						"y": 257,
+						"w": 96,
+						"h": 112
+					}
+				},
+				{
+					"filename": "allies/A03/idle/idle_00.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 96,
+						"h": 112
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 96,
+						"h": 112
+					},
+					"frame": {
+						"x": 701,
+						"y": 541,
+						"w": 96,
+						"h": 112
+					}
+				},
+				{
+					"filename": "allies/A03/idle/idle_01.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 96,
+						"h": 112
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 96,
+						"h": 112
+					},
+					"frame": {
+						"x": 701,
+						"y": 659,
+						"w": 96,
+						"h": 112
+					}
+				},
+				{
+					"filename": "allies/A03/idle/idle_02.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 96,
+						"h": 112
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 96,
+						"h": 112
+					},
+					"frame": {
+						"x": 535,
+						"y": 809,
+						"w": 96,
+						"h": 112
+					}
+				},
+				{
+					"filename": "allies/A03/idle/idle_03.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 96,
+						"h": 112
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 96,
+						"h": 112
+					},
+					"frame": {
+						"x": 637,
+						"y": 777,
 						"w": 96,
 						"h": 112
 					}
@@ -360,8 +780,8 @@
 						"h": 112
 					},
 					"frame": {
-						"x": 1397,
-						"y": 139,
+						"x": 637,
+						"y": 895,
 						"w": 96,
 						"h": 112
 					}
@@ -381,8 +801,8 @@
 						"h": 112
 					},
 					"frame": {
-						"x": 1461,
-						"y": 5,
+						"x": 739,
+						"y": 777,
 						"w": 96,
 						"h": 112
 					}
@@ -402,8 +822,8 @@
 						"h": 112
 					},
 					"frame": {
-						"x": 1499,
-						"y": 123,
+						"x": 739,
+						"y": 895,
 						"w": 96,
 						"h": 112
 					}
@@ -423,8 +843,92 @@
 						"h": 112
 					},
 					"frame": {
-						"x": 1563,
-						"y": 5,
+						"x": 803,
+						"y": 525,
+						"w": 96,
+						"h": 112
+					}
+				},
+				{
+					"filename": "enemies/E02/walk/walk_00.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 96,
+						"h": 112
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 96,
+						"h": 112
+					},
+					"frame": {
+						"x": 803,
+						"y": 643,
+						"w": 96,
+						"h": 112
+					}
+				},
+				{
+					"filename": "enemies/E02/walk/walk_01.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 96,
+						"h": 112
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 96,
+						"h": 112
+					},
+					"frame": {
+						"x": 867,
+						"y": 407,
+						"w": 96,
+						"h": 112
+					}
+				},
+				{
+					"filename": "enemies/E02/walk/walk_02.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 96,
+						"h": 112
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 96,
+						"h": 112
+					},
+					"frame": {
+						"x": 841,
+						"y": 761,
+						"w": 96,
+						"h": 112
+					}
+				},
+				{
+					"filename": "enemies/E02/walk/walk_03.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 96,
+						"h": 112
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 96,
+						"h": 112
+					},
+					"frame": {
+						"x": 841,
+						"y": 879,
 						"w": 96,
 						"h": 112
 					}
@@ -435,6 +939,6 @@
 	"meta": {
 		"app": "https://www.codeandweb.com/texturepacker",
 		"version": "3.0",
-		"smartupdate": "$TexturePacker:SmartUpdate:d3382ebee89ff3f99a652a7f4ccf677f:295c00c5bab78ed40386d3c357d22cc5:bb447c4d1c842b0fc77df58e34d69c1d$"
+		"smartupdate": "$TexturePacker:SmartUpdate:bc82e9a4ef433d5db76bef8d1cf91ffc:39911a71bfa65694b61383caf8eedd77:bb447c4d1c842b0fc77df58e34d69c1d$"
 	}
 }

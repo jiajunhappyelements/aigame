@@ -32,6 +32,7 @@ The static output is generated in `dist/`.
 - Keep static gameplay art as individual PNG files in `public/assets/sprites/`. These are loaded through `src/config/sprites.ts`.
 - Placeholder-only characters remain procedural until final art is ready, so prototype gameplay does not wait for production assets.
 - Put each transparent character or effect frame under `public/assets/animation-source/<group>/<id>/<action>/`, using the same canvas size and foot anchor throughout a sequence, then register playable sequences in `src/config/animations.ts`.
+- AI-generated horizontal strips can be normalized into source frames with `npm run assets:process-strip -- --input <strip.png> --out-dir public/assets/animation-source/allies/A02/idle --prefix idle --canvas 96x112 --baseline 106 --target-height 88`.
 - Publish only animation frames into the runtime atlas:
 
 ```bash
