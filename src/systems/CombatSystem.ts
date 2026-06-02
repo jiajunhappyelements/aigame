@@ -2,8 +2,8 @@ import Phaser from "phaser";
 import type { Fighter, GameState } from "../types";
 import { ALLY_SPECS } from "../config/units";
 import { CASTLE, GAME_WIDTH } from "../config/game";
-import { impact, floatText, frostEffect, burnEffect, healEffect, auraEffect, coinBounty } from "./Effects";
-import { playFighterAttackAnimation } from "../render/animations";
+import { impact, floatText, frostEffect, burnEffect, healEffect, auraEffect, coinBounty, deathEffect } from "./Effects";
+import { playFighterAttackAnimation, playFighterBaseAnimation } from "../render/animations";
 
 const CRIT_CHANCE = 0.05;
 const CRIT_MULT = 1.5;
@@ -34,11 +34,13 @@ export class CombatSystem {
       if (!ally.active) continue;
       const target = this.findAllyTarget(ally);
       if (!target) {
+        playFighterBaseAnimation(ally);
         ally.attackTimer = Math.max(0, ally.attackTimer - dt);
         continue;
       }
       const dist = Phaser.Math.Distance.Between(ally.x, ally.y, target.x, target.y);
       if (dist > ally.range) {
+        playFighterBaseAnimation(ally);
         this.moveToward(ally, target.x, target.y, dt, now);
         ally.attackTimer = 0;
       } else {
@@ -46,6 +48,8 @@ export class CombatSystem {
         if (ally.attackTimer <= 0) {
           this.allyAttack(ally, target, now);
           ally.attackTimer = ally.attackCd;
+        } else {
+          playFighterBaseAnimation(ally);
         }
       }
     }
@@ -61,6 +65,7 @@ export class CombatSystem {
       if (allyTarget) {
         const dist = Phaser.Math.Distance.Between(enemy.x, enemy.y, allyTarget.x, allyTarget.y);
         if (dist > enemy.range) {
+          playFighterBaseAnimation(enemy);
           this.moveToward(enemy, allyTarget.x, allyTarget.y, dt, now);
           enemy.attackTimer = 0;
         } else {
@@ -68,11 +73,14 @@ export class CombatSystem {
           if (enemy.attackTimer <= 0) {
             this.enemyAttack(enemy, allyTarget, now);
             enemy.attackTimer = enemy.attackCd;
+          } else {
+            playFighterBaseAnimation(enemy);
           }
         }
       } else {
         // No ally target: move toward castle or attack it
         if (enemy.y < CASTLE_ATTACK_LINE) {
+          playFighterBaseAnimation(enemy);
           this.moveToward(enemy, enemy.x, CASTLE_ATTACK_LINE, dt, now);
           enemy.attackTimer = 0;
         } else {
@@ -81,6 +89,8 @@ export class CombatSystem {
           if (enemy.attackTimer <= 0) {
             this.enemyAttackCastle(enemy);
             enemy.attackTimer = enemy.attackCd;
+          } else {
+            playFighterBaseAnimation(enemy);
           }
         }
       }
@@ -412,23 +422,38 @@ export class CombatSystem {
     for (let i = this.gs.enemies.length - 1; i >= 0; i--) {
       const e = this.gs.enemies[i];
       if (e.hp <= 0 && e.active) {
+        e.active = false;
+        e.dying = true;
         const bounty = Math.round((e.bounty ?? 0) * this.gs.bountyMultiplier);
         this.gs.gold += bounty;
         if (bounty > 0) coinBounty(this.scene, e.x, e.y, bounty);
-        e.destroy();
+        deathEffect(this.scene, e.x, e.y, 0xff5b4f);
+        this.scene.tweens.add({
+          targets: e, alpha: 0, y: e.y + 12, scaleX: 0.2, scaleY: 0.2,
+          duration: 500, ease: "Quad.easeIn",
+          onComplete: () => { e.destroy(); },
+        });
         this.gs.enemies.splice(i, 1);
       }
     }
     for (let i = this.gs.allies.length - 1; i >= 0; i--) {
       const a = this.gs.allies[i];
       if (a.hp <= 0 && a.active) {
-        a.destroy();
+        a.active = false;
+        a.dying = true;
+        deathEffect(this.scene, a.x, a.y, 0x4af06a);
+        this.scene.tweens.add({
+          targets: a, alpha: 0, y: a.y + 12, scaleX: 0.2, scaleY: 0.2,
+          duration: 500, ease: "Quad.easeIn",
+          onComplete: () => { a.destroy(); },
+        });
         this.gs.allies.splice(i, 1);
       }
     }
   }
 
   private enemyAttackCastle(enemy: Fighter): void {
+    playFighterAttackAnimation(enemy);
     let dmg = enemy.atk;
     if (enemy.traits?.includes("siege")) dmg = Math.round(dmg * 2);
     if (this.hasCommandBuff()) dmg = Math.round(dmg * 1.1);

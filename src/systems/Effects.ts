@@ -99,6 +99,23 @@ export function auraEffect(scene: Phaser.Scene, x: number, y: number, color: num
   });
 }
 
+export function deathEffect(scene: Phaser.Scene, x: number, y: number, color: number): void {
+  const g = scene.add.graphics().setDepth(80);
+  g.fillStyle(color, 0.8);
+  g.fillCircle(x, y, 14);
+  scene.tweens.add({
+    targets: g, alpha: 0, scaleX: 2.2, scaleY: 2.2,
+    duration: 350, ease: "Quad.easeOut", onComplete: () => g.destroy(),
+  });
+  const flash = scene.add.graphics().setDepth(81);
+  flash.fillStyle(0xff2222, 0.6);
+  flash.fillCircle(x, y, 8);
+  scene.tweens.add({
+    targets: flash, alpha: 0, scaleX: 3, scaleY: 3,
+    duration: 250, ease: "Quad.easeOut", onComplete: () => flash.destroy(),
+  });
+}
+
 export function coinBounty(scene: Phaser.Scene, x: number, y: number, amount: number): void {
   const coin = scene.add.circle(x, y, 6, 0xffd700, 1).setDepth(100);
   const label = scene.add.text(x + 10, y - 5, `+${amount}`, {

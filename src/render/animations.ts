@@ -14,6 +14,7 @@ export function createConfiguredAnimations(scene: Phaser.Scene): void {
 }
 
 export function playFighterBaseAnimation(fighter: Fighter): void {
+  if (fighter.attacking || fighter.dying) return;
   const def = getFighterAnimation(fighter.id as AllyId | EnemyId);
   if (!def) return;
   playClip(fighter, def.base, true);
@@ -22,9 +23,14 @@ export function playFighterBaseAnimation(fighter: Fighter): void {
 export function playFighterAttackAnimation(fighter: Fighter): void {
   const def = getFighterAnimation(fighter.id as AllyId | EnemyId);
   if (!def?.attack) return;
-  const sprite = playClip(fighter, def.attack, true);
-  if (!sprite) return;
+  fighter.attacking = true;
+  const sprite = playClip(fighter, def.attack, false);
+  if (!sprite) {
+    fighter.attacking = false;
+    return;
+  }
   sprite.once(Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + def.attack.animationKey, () => {
+    fighter.attacking = false;
     if (fighter.active) playFighterBaseAnimation(fighter);
   });
 }
@@ -42,7 +48,6 @@ function createAnimation(scene: Phaser.Scene, clip: AnimationClipDef): void {
 function playClip(fighter: Fighter, clip: AnimationClipDef, ignoreIfPlaying: boolean): Phaser.GameObjects.Sprite | null {
   const sprite = fighter.getByName("sprite") as Phaser.GameObjects.Sprite | null;
   if (!sprite?.anims) return null;
-  sprite.setDisplaySize(clip.displayWidth, clip.displayHeight);
   sprite.play(clip.animationKey, ignoreIfPlaying);
   return sprite;
 }

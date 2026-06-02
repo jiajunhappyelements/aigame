@@ -76,6 +76,8 @@ export type Fighter = Phaser.GameObjects.Container & {
   traits: string[];
   skill1Level: number;
   skill2Level: number;
+  attacking?: boolean;
+  dying?: boolean;
 };
 
 export type SpriteDef = {

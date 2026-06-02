@@ -53,6 +53,8 @@ export function createFighter(
   container.slowPercent = 0;
   container.burnUntil = 0;
   container.burnDps = 0;
+  container.attacking = false;
+  container.dying = false;
   if (!isAlly) {
     container.bounty = (spec as EnemySpec).bounty;
   }

@@ -16,10 +16,15 @@ function fighter(
   baseHeight: number,
   baseFrameRate: number,
   attackAction: string,
-  attackWidth: number,
-  attackHeight: number,
+  attackSrcW: number,
+  attackSrcH: number,
 ): FighterAnimationDef {
   const group = id.startsWith("A") ? "allies" : "enemies";
+
+  // Attack displayHeight is locked to base, so both animations occupy the same vertical space.
+  // Attack displayWidth scales proportionally from the source strip aspect ratio.
+  const attackHeight = baseHeight;
+  const attackWidth = Math.round(baseHeight * (attackSrcW / attackSrcH));
 
   return {
     base: {
@@ -41,26 +46,29 @@ function fighter(
 }
 
 export const FIGHTER_ANIMATIONS: Partial<Record<AllyId | EnemyId, FighterAnimationDef>> = {
-  A01: fighter("A01", "idle", 72, 84, 5, "attack", 180, 84),
-  A02: fighter("A02", "idle", 72, 84, 5, "attack", 168, 96),
-  A03: fighter("A03", "idle", 72, 84, 5, "attack", 168, 96),
-  A04: fighter("A04", "idle", 72, 84, 5, "attack", 168, 96),
-  A05: fighter("A05", "fly", 58, 58, 8, "attack", 96, 58),
-  A06: fighter("A06", "idle", 72, 84, 6, "attack", 126, 84),
-  A07: fighter("A07", "fly", 112, 78, 7, "attack", 146, 78),
-  A08: fighter("A08", "idle", 72, 84, 5, "attack", 168, 96),
-  A09: fighter("A09", "fly", 120, 84, 7, "attack", 168, 96),
-  A10: fighter("A10", "idle", 72, 84, 5, "attack", 168, 96),
-  E01: fighter("E01", "walk", 60, 70, 7, "attack", 100, 80),
-  E02: fighter("E02", "walk", 60, 70, 7, "attack", 120, 80),
-  E03: fighter("E03", "walk", 70, 80, 6, "attack", 140, 90),
-  E04: fighter("E04", "fly", 58, 58, 8, "attack", 96, 58),
-  E05: fighter("E05", "float", 60, 70, 7, "attack", 100, 80),
-  E06: fighter("E06", "fly", 58, 58, 8, "attack", 96, 58),
-  E07: fighter("E07", "fly", 90, 78, 7, "attack", 134, 78),
-  E08: fighter("E08", "walk", 80, 90, 6, "attack", 160, 100),
-  E09: fighter("E09", "fly", 124, 90, 7, "attack", 180, 90),
-  E10: fighter("E10", "walk", 100, 112, 6, "attack", 200, 122),
+  // Ally ground: idle 4f → 8fps (halves loop duration from 0.8s→0.5s for less sliding)
+  A01: fighter("A01", "idle", 72, 84, 8, "attack", 180, 84),
+  A02: fighter("A02", "idle", 72, 84, 8, "attack", 168, 96),
+  A03: fighter("A03", "idle", 72, 84, 8, "attack", 168, 96),
+  A04: fighter("A04", "idle", 72, 84, 8, "attack", 168, 96),
+  // Ally flying: keep fast flutter
+  A05: fighter("A05", "fly", 58, 58, 10, "attack", 96, 58),
+  A06: fighter("A06", "idle", 72, 84, 8, "attack", 126, 84),
+  A07: fighter("A07", "fly", 112, 78, 9, "attack", 146, 78),
+  A08: fighter("A08", "idle", 72, 84, 8, "attack", 168, 96),
+  A09: fighter("A09", "fly", 120, 84, 9, "attack", 168, 96),
+  A10: fighter("A10", "idle", 72, 84, 8, "attack", 168, 96),
+  // Enemy ground: walk loop faster to match movement pace
+  E01: fighter("E01", "walk", 60, 70, 9, "attack", 100, 80),
+  E02: fighter("E02", "walk", 60, 70, 9, "attack", 120, 80),
+  E03: fighter("E03", "walk", 70, 80, 8, "attack", 140, 90),
+  E04: fighter("E04", "fly", 58, 58, 10, "attack", 96, 58),
+  E05: fighter("E05", "float", 60, 70, 10, "attack", 100, 80),  // swift → fastest
+  E06: fighter("E06", "fly", 58, 58, 10, "attack", 96, 58),
+  E07: fighter("E07", "fly", 90, 78, 9, "attack", 134, 78),
+  E08: fighter("E08", "walk", 80, 90, 8, "attack", 160, 100),
+  E09: fighter("E09", "fly", 124, 90, 9, "attack", 180, 90),
+  E10: fighter("E10", "walk", 100, 112, 8, "attack", 200, 122),
 };
 
 export const EFFECT_ANIMATIONS: Record<string, EffectAnimationDef> = {
