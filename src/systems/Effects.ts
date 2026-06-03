@@ -1,6 +1,21 @@
 import Phaser from "phaser";
 import { ANIMATION_ATLAS, getEffectAnimation } from "../config/animations";
 
+function playEffectAnimation(scene: Phaser.Scene, key: string, x: number, y: number): void {
+  const def = getEffectAnimation(key);
+  if (!def) return;
+
+  const sprite = scene.add
+    .sprite(x, y, ANIMATION_ATLAS.key, def.frames[0])
+    .setDisplaySize(def.displayWidth, def.displayHeight)
+    .setDepth(def.depth);
+
+  sprite.play(def.animationKey);
+  sprite.once(Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + def.animationKey, () => {
+    sprite.destroy();
+  });
+}
+
 export function floatText(scene: Phaser.Scene, x: number, y: number, str: string, color: number): void {
   const t = scene.add.text(x, y, str, {
     fontFamily: "Arial",
@@ -23,6 +38,38 @@ export function impact(scene: Phaser.Scene, x: number, y: number): void {
 export function landingBlast(_scene: Phaser.Scene, _x: number, _y: number, _radius: number): void {}
 
 export function exposureFlash(_scene: Phaser.Scene, _x: number, _y: number): void {}
+
+export function fireballExplosion(scene: Phaser.Scene, x: number, y: number): void {
+  playEffectAnimation(scene, "fireball-explosion", x, y);
+}
+
+export function swordWave(scene: Phaser.Scene, x: number, y: number): void {
+  playEffectAnimation(scene, "sword-wave", x, y);
+}
+
+export function thrustImpact(scene: Phaser.Scene, x: number, y: number): void {
+  playEffectAnimation(scene, "thrust-impact", x, y);
+}
+
+export function shieldGuard(scene: Phaser.Scene, x: number, y: number): void {
+  playEffectAnimation(scene, "shield-guard", x, y);
+}
+
+export function diveStrike(scene: Phaser.Scene, x: number, y: number): void {
+  playEffectAnimation(scene, "dive-strike", x, y);
+}
+
+export function critHit(scene: Phaser.Scene, x: number, y: number): void {
+  playEffectAnimation(scene, "crit-hit", x, y);
+}
+
+export function meteorImpact(scene: Phaser.Scene, x: number, y: number): void {
+  playEffectAnimation(scene, "meteor-impact", x, y);
+}
+
+export function dragonBreath(scene: Phaser.Scene, x: number, y: number): void {
+  playEffectAnimation(scene, "dragon-breath", x, y);
+}
 
 export function frostEffect(scene: Phaser.Scene, x: number, y: number): void {
   const g = scene.add.graphics().setDepth(80);

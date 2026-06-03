@@ -2,7 +2,24 @@ import Phaser from "phaser";
 import type { Fighter, GameState } from "../types";
 import { ALLY_SPECS } from "../config/units";
 import { CASTLE, GAME_WIDTH, TILE_SIZE } from "../config/game";
-import { impact, floatText, frostEffect, burnEffect, healEffect, auraEffect, coinBounty, deathEffect } from "./Effects";
+import {
+  impact,
+  floatText,
+  frostEffect,
+  burnEffect,
+  healEffect,
+  auraEffect,
+  coinBounty,
+  deathEffect,
+  fireballExplosion,
+  swordWave,
+  thrustImpact,
+  shieldGuard,
+  diveStrike,
+  critHit,
+  meteorImpact,
+  dragonBreath,
+} from "./Effects";
 import { playFighterAttackAnimation, playFighterBaseAnimation } from "../render/animations";
 
 const CRIT_CHANCE = 0.05;
@@ -15,6 +32,7 @@ export class CombatSystem {
   private frameCount = 0;
   private healTimers: Map<string, number> = new Map();
   private auraTimers: Map<string, number> = new Map();
+  private shieldFxTimers: Map<Fighter, number> = new Map();
 
   constructor(scene: Phaser.Scene, gs: GameState) {
     this.scene = scene;
@@ -250,7 +268,10 @@ export class CombatSystem {
       result = Math.round(result * (1 - this.getHeavyReduction(target)));
     }
     const knightRed = this.getKnightReduction(target);
-    if (knightRed > 0) result = Math.round(result * (1 - knightRed));
+    if (knightRed > 0) {
+      this.playShieldGuardThrottled(target);
+      result = Math.round(result * (1 - knightRed));
+    }
     if (!attackerIsAlly && target.team === "ally") {
       const guardianRed = this.getGuardianReductionForAlly(target);
       if (guardianRed > 0) result = Math.round(result * (1 - guardianRed));
@@ -264,29 +285,42 @@ export class CombatSystem {
 
     if (spec.skill1 && lv > 0) {
       switch (spec.id) {
-        case "A01": dmg = Math.round(dmg * (1 + [0, 0.2, 0.35, 0.5][lv])); break;
-        case "A02": this.applySplashWithReduction(target, Math.round(dmg * [0, 0.6, 0.75, 0.9][lv])); break;
+        case "A01":
+          thrustImpact(this.scene, target.x, target.y);
+          dmg = Math.round(dmg * (1 + [0, 0.2, 0.35, 0.5][lv]));
+          break;
+        case "A02":
+          swordWave(this.scene, target.x, target.y);
+          this.applySplashWithReduction(target, Math.round(dmg * [0, 0.6, 0.75, 0.9][lv]));
+          break;
         case "A03": {
           const aoeDmg = Math.round(dmg * [0, 0.7, 0.85, 1.0][lv]);
+          fireballExplosion(this.scene, target.x, target.y);
           this.applyAoeWithReduction(target.x, target.y, 1.2 * 96, aoeDmg);
           break;
         }
         case "A05":
-          if (target.moveMode === "flying") dmg = Math.round(dmg * (1 + [0, 0.25, 0.45, 0.65][lv]));
+          if (target.moveMode === "flying") {
+            diveStrike(this.scene, target.x, target.y);
+            dmg = Math.round(dmg * (1 + [0, 0.25, 0.45, 0.65][lv]));
+          }
           break;
         case "A06":
           if (Math.random() < [0, 0.15, 0.25, 0.4][lv]) {
             dmg = Math.round(dmg * CRIT_MULT);
+            critHit(this.scene, target.x, target.y);
             floatText(this.scene, target.x, target.y - 30, "精准!", 0x00ff88);
           }
           break;
         case "A08": {
           const meteorDmg = Math.round(dmg * [0, 0.8, 0.95, 1.1][lv]);
+          meteorImpact(this.scene, target.x, target.y);
           this.applyAoeWithReduction(target.x, target.y, 1.5 * 96, meteorDmg);
           break;
         }
         case "A09": {
           const breathDmg = Math.round(dmg * [0, 0.75, 0.9, 1.1][lv]);
+          dragonBreath(this.scene, target.x, target.y);
           this.applyAoeWithReduction(target.x, target.y, 1.5 * 96, breathDmg);
           break;
         }
@@ -360,6 +394,14 @@ export class CombatSystem {
   private getKnightReduction(fighter: Fighter): number {
     if (fighter.id !== "A04" || fighter.skill1Level <= 0) return 0;
     return [0, 0.15, 0.25, 0.35][fighter.skill1Level];
+  }
+
+  private playShieldGuardThrottled(fighter: Fighter): void {
+    const now = this.scene.time.now;
+    const last = this.shieldFxTimers.get(fighter) ?? 0;
+    if (now - last < 650) return;
+    this.shieldFxTimers.set(fighter, now);
+    shieldGuard(this.scene, fighter.x, fighter.y);
   }
 
   private getGuardianReductionForAlly(fighter: Fighter): number {
