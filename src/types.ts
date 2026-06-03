@@ -78,6 +78,7 @@ export type Fighter = Phaser.GameObjects.Container & {
   skill2Level: number;
   attacking?: boolean;
   dying?: boolean;
+  moveTime?: number;
 };
 
 export type SpriteDef = {

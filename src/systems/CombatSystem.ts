@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import type { Fighter, GameState } from "../types";
 import { ALLY_SPECS } from "../config/units";
-import { CASTLE, GAME_WIDTH } from "../config/game";
+import { CASTLE, GAME_WIDTH, TILE_SIZE } from "../config/game";
 import { impact, floatText, frostEffect, burnEffect, healEffect, auraEffect, coinBounty, deathEffect } from "./Effects";
 import { playFighterAttackAnimation, playFighterBaseAnimation } from "../render/animations";
 
@@ -12,6 +12,7 @@ const CASTLE_ATTACK_LINE = CASTLE.y - 35;
 export class CombatSystem {
   private scene: Phaser.Scene;
   private gs: GameState;
+  private frameCount = 0;
   private healTimers: Map<string, number> = new Map();
   private auraTimers: Map<string, number> = new Map();
 
@@ -21,6 +22,10 @@ export class CombatSystem {
   }
 
   update(dt: number, now: number): void {
+    this.frameCount++;
+    for (const ally of this.gs.allies) {
+      if (ally.moveMode === "ground") this.resetMovementVisuals(ally);
+    }
     this.processAllies(dt, now);
     this.processEnemies(dt, now);
     this.processBuffs(dt, now);
@@ -49,6 +54,7 @@ export class CombatSystem {
           this.allyAttack(ally, target, now);
           ally.attackTimer = ally.attackCd;
         } else {
+          this.faceToward(ally, target.x);
           playFighterBaseAnimation(ally);
         }
       }
@@ -74,6 +80,7 @@ export class CombatSystem {
             this.enemyAttack(enemy, allyTarget, now);
             enemy.attackTimer = enemy.attackCd;
           } else {
+            this.faceToward(enemy, allyTarget.x);
             playFighterBaseAnimation(enemy);
           }
         }
@@ -178,9 +185,34 @@ export class CombatSystem {
     fighter.y += moveY;
     const body = fighter.body as Phaser.Physics.Arcade.Body | undefined;
     if (body) body.reset(fighter.x, fighter.y);
+    this.faceToward(fighter, tx);
+
+    if (fighter.team === "ally" && fighter.moveMode === "ground") {
+      fighter.moveTime = (fighter.moveTime ?? 0) + dt;
+      const phase = fighter.moveTime * 0.014;
+      const bounce = Math.sin(phase) * Math.min(6, speed / TILE_SIZE * 2.5);
+      const lean = Math.sin(phase) * 0.07;
+      const sprite = fighter.getByName("sprite") as Phaser.GameObjects.Sprite | null;
+      if (sprite) sprite.y = bounce;
+      fighter.rotation = lean * (tx < fighter.x ? -1 : 1);
+    }
+  }
+
+  private faceToward(fighter: Fighter, tx: number): void {
+    const sprite = fighter.getByName("sprite") as Phaser.GameObjects.Sprite | null;
+    if (!sprite) return;
+    sprite.setFlipX(tx < fighter.x);
+  }
+
+  private resetMovementVisuals(fighter: Fighter): void {
+    fighter.rotation = 0;
+    fighter.moveTime = 0;
+    const sprite = fighter.getByName("sprite") as Phaser.GameObjects.Sprite | null;
+    if (sprite) sprite.y = 0;
   }
 
   private allyAttack(ally: Fighter, target: Fighter, now: number): void {
+    this.faceToward(ally, target.x);
     playFighterAttackAnimation(ally);
     let dmg = ally.atk * this.gs.unitDamageMultiplier;
     const spec = ALLY_SPECS[ally.id as keyof typeof ALLY_SPECS];
@@ -198,6 +230,7 @@ export class CombatSystem {
   }
 
   private enemyAttack(enemy: Fighter, target: Fighter, now: number): void {
+    this.faceToward(enemy, target.x);
     playFighterAttackAnimation(enemy);
     let dmg = enemy.atk;
     if (this.hasCommandBuff()) dmg = Math.round(dmg * 1.1);

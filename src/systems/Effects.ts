@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import { GAME_WIDTH } from "../config/game";
 import { ANIMATION_ATLAS, getEffectAnimation } from "../config/animations";
 
 export function floatText(scene: Phaser.Scene, x: number, y: number, str: string, color: number): void {
@@ -18,46 +17,12 @@ export function floatText(scene: Phaser.Scene, x: number, y: number, str: string
 }
 
 export function impact(scene: Phaser.Scene, x: number, y: number): void {
-  const g = scene.add.graphics().setDepth(80);
-  g.fillStyle(0xf4e842, 0.8);
-  g.fillCircle(x, y, 8);
-  scene.tweens.add({
-    targets: g, alpha: 0, scaleX: 2.5, scaleY: 2.5,
-    duration: 180, ease: "Quad.easeOut", onComplete: () => g.destroy(),
-  });
+  // impact effect removed
 }
 
-export function landingBlast(scene: Phaser.Scene, x: number, y: number, radius: number): void {
-  const animation = getEffectAnimation("landing-impact");
-  if (animation) {
-    const sprite = scene.add
-      .sprite(x, y, ANIMATION_ATLAS.key, animation.frames[0])
-      .setDisplaySize(animation.displayWidth, animation.displayHeight)
-      .setDepth(animation.depth);
-    sprite.play(animation.animationKey);
-    sprite.once(Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + animation.animationKey, () => sprite.destroy());
-    return;
-  }
+export function landingBlast(_scene: Phaser.Scene, _x: number, _y: number, _radius: number): void {}
 
-  const g = scene.add.graphics().setDepth(79);
-  g.lineStyle(3, 0xf4e842, 0.8);
-  g.strokeCircle(x, y, 10);
-  scene.tweens.add({
-    targets: g, alpha: 0,
-    scaleX: radius / 10, scaleY: radius / 10,
-    duration: 350, ease: "Quad.easeOut", onComplete: () => g.destroy(),
-  });
-}
-
-export function exposureFlash(scene: Phaser.Scene, x: number, y: number): void {
-  const g = scene.add.graphics().setDepth(90);
-  g.fillStyle(0xffffff, 1);
-  g.fillCircle(x, y, 30);
-  scene.tweens.add({
-    targets: g, alpha: 0, scaleX: 2, scaleY: 2,
-    duration: 250, ease: "Quad.easeOut", onComplete: () => g.destroy(),
-  });
-}
+export function exposureFlash(_scene: Phaser.Scene, _x: number, _y: number): void {}
 
 export function frostEffect(scene: Phaser.Scene, x: number, y: number): void {
   const g = scene.add.graphics().setDepth(80);
@@ -99,33 +64,16 @@ export function auraEffect(scene: Phaser.Scene, x: number, y: number, color: num
   });
 }
 
-export function deathEffect(scene: Phaser.Scene, x: number, y: number, color: number): void {
-  const g = scene.add.graphics().setDepth(80);
-  g.fillStyle(color, 0.8);
-  g.fillCircle(x, y, 14);
-  scene.tweens.add({
-    targets: g, alpha: 0, scaleX: 2.2, scaleY: 2.2,
-    duration: 350, ease: "Quad.easeOut", onComplete: () => g.destroy(),
-  });
-  const flash = scene.add.graphics().setDepth(81);
-  flash.fillStyle(0xff2222, 0.6);
-  flash.fillCircle(x, y, 8);
-  scene.tweens.add({
-    targets: flash, alpha: 0, scaleX: 3, scaleY: 3,
-    duration: 250, ease: "Quad.easeOut", onComplete: () => flash.destroy(),
-  });
-}
+export function deathEffect(_scene: Phaser.Scene, _x: number, _y: number, _color: number): void {}
 
 export function coinBounty(scene: Phaser.Scene, x: number, y: number, amount: number): void {
-  const coin = scene.add.circle(x, y, 6, 0xffd700, 1).setDepth(100);
-  const label = scene.add.text(x + 10, y - 5, `+${amount}`, {
+  const label = scene.add.text(x, y - 5, `+${amount}`, {
     fontFamily: "Arial", fontSize: "12px", color: "#ffd700",
     stroke: "#000000", strokeThickness: 3
   }).setDepth(100);
   scene.tweens.add({
-    targets: [coin, label],
-    x: GAME_WIDTH - 20, y: 30,
-    duration: 600, ease: "Cubic.easeIn",
-    onComplete: () => { coin.destroy(); label.destroy(); }
+    targets: label, y: y - 40, alpha: 0,
+    duration: 800, ease: "Cubic.easeOut",
+    onComplete: () => label.destroy()
   });
 }
