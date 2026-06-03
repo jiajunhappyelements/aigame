@@ -54,6 +54,32 @@ export const WAVE = {
   spawnPadding: 200,
 };
 
+export const LEVEL_COUNT = 7;
+
+export const LEVEL_NAMES: Record<number, string> = {
+  1: "哥布林入侵",
+  2: "骷髅军团",
+  3: "暗夜蝙蝠",
+  4: "幽灵来袭",
+  5: "巨龙之巢",
+  6: "巨魔攻城",
+  7: "魔王降临",
+};
+
+const SAVE_KEY = "sling-guardians-save";
+
+export function loadSave(): { unlockedLevel: number; stars: Record<number, number>; gold: number } {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return { unlockedLevel: 1, stars: {}, gold: 0 };
+}
+
+export function saveSave(data: { unlockedLevel: number; stars: Record<number, number>; gold: number }) {
+  localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+}
+
 export const LEVEL_UNLOCKS: Record<number, { allies: AllyId[]; enemies: EnemyId[] }> = {
   1: { allies: ["A01", "A02", "A03"], enemies: ["E01", "E02"] },
   2: { allies: ["A04", "A10"], enemies: ["E03"] },
@@ -80,8 +106,8 @@ export function getUnlockedEnemies(level: number): EnemyId[] {
   return result;
 }
 
-export function createInitialState(): GameState {
-  const level = 1;
+export function createInitialState(startLevel = 1): GameState {
+  const level = startLevel;
   return {
     level,
     wave: 1,

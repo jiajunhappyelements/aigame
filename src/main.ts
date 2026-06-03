@@ -1,6 +1,10 @@
 import Phaser from "phaser";
 import { GAME_WIDTH, GAME_HEIGHT } from "./config/game";
+import { TitleScene } from "./scenes/TitleScene";
+import { LevelSelectScene } from "./scenes/LevelSelectScene";
 import { GameScene } from "./scenes/GameScene";
+import { VictoryScene } from "./scenes/VictoryScene";
+import { DefeatScene } from "./scenes/DefeatScene";
 import "./style.css";
 
 new Phaser.Game({
@@ -20,5 +24,5 @@ new Phaser.Game({
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH
   },
-  scene: [GameScene]
+  scene: [TitleScene, LevelSelectScene, GameScene, VictoryScene, DefeatScene]
 });

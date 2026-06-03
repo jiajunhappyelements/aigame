@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { GAME_WIDTH, GAME_HEIGHT, createInitialState, LANES, CASTLE } from "../config/game";
+import { GAME_WIDTH, GAME_HEIGHT, createInitialState, LANES, CASTLE, LEVEL_COUNT, loadSave, saveSave, WAVE } from "../config/game";
 import { createBackdrop } from "../render/backdrop";
 import { createSpriteTextures } from "../render/spriteTextures";
 import { createConfiguredAnimations } from "../render/animations";
@@ -15,6 +15,7 @@ import { UpgradeModal } from "../ui/UpgradeModal";
 import { Hud } from "../ui/Hud";
 import { ActionButtons } from "../ui/ActionButtons";
 import { CardPanel } from "../ui/CardPanel";
+import { createButton, createPanel, createTitle } from "../ui/UIHelper";
 import { ALLY_SPECS } from "../config/units";
 import type { AllyId, GameState } from "../types";
 
@@ -29,6 +30,13 @@ export class GameScene extends Phaser.Scene {
   private slingshotSystem!: SlingshotSystem;
   private summonSystem!: SummonSystem;
   private upgradeSystem!: UpgradeSystem;
+  private currentLevel = 1;
+  private paused = false;
+  private pauseOverlay: Phaser.GameObjects.Container | null = null;
+
+  constructor() {
+    super({ key: "GameScene" });
+  }
 
   preload() {
     for (const def of SPRITE_DEFS) {
@@ -37,8 +45,12 @@ export class GameScene extends Phaser.Scene {
     this.load.multiatlas(ANIMATION_ATLAS.key, ANIMATION_ATLAS.dataPath, ANIMATION_ATLAS.texturePath);
   }
 
-  create() {
-    this.state = createInitialState();
+  create(data?: { level?: number }) {
+    this.currentLevel = data?.level || 1;
+    this.paused = false;
+    this.pauseOverlay = null;
+    this.gameOverShown = false;
+    this.state = createInitialState(this.currentLevel);
     createSpriteTextures(this);
     createConfiguredAnimations(this);
     createBackdrop(this);
@@ -68,6 +80,11 @@ export class GameScene extends Phaser.Scene {
 
     this.slingshotSystem.setCombatSystem(this.combatSystem);
     this.hud = new Hud(this, this.state);
+
+    // 暂停按钮
+    const pauseBtn = createButton(this, GAME_WIDTH - 40, 30, 50, 36, "||", 0x555555, "20px");
+    pauseBtn.setDepth(50);
+    pauseBtn.on("pointerdown", () => this.togglePause());
 
     this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
       if (this.state.modalOpen) return;
@@ -130,61 +147,88 @@ export class GameScene extends Phaser.Scene {
   private showGameOver() {
     if (this.gameOverShown) return;
     this.gameOverShown = true;
-    this.scene.pause();
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.75).setDepth(100);
-    this.add
-      .text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 50, "GAME OVER", {
-        fontFamily: "Arial", fontSize: "48px", color: "#ff3333",
-        align: "center", stroke: "#000000", strokeThickness: 8,
-      })
-      .setOrigin(0.5)
-      .setDepth(101);
-    this.add
-      .text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 10, "基地被攻破", {
-        fontFamily: "Arial", fontSize: "20px", color: "#ffffff",
-        align: "center", stroke: "#000000", strokeThickness: 4,
-      })
-      .setOrigin(0.5)
-      .setDepth(101);
-    const restartBtn = this.add
-      .text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 60, "重新开始", {
-        fontFamily: "Arial", fontSize: "24px", color: "#4a9eff",
-        align: "center", stroke: "#000000", strokeThickness: 4,
-      })
-      .setOrigin(0.5)
-      .setDepth(101)
-      .setInteractive();
-    restartBtn.on("pointerdown", () => this.scene.restart());
-    this.state.castleHp = 0;
     this.slingshotSystem.cancelPending();
+    this.state.castleHp = 0;
+
+    this.cameras.main.fadeOut(500, 0, 0, 0);
+    this.cameras.main.once("camerafadeoutcomplete", () => {
+      this.scene.start("DefeatScene", { level: this.currentLevel });
+    });
   }
 
   private showVictory() {
-    this.scene.pause();
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.75).setDepth(100);
-    this.add
-      .text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 50, "胜利!", {
-        fontFamily: "Arial", fontSize: "48px", color: "#ffd700",
-        align: "center", stroke: "#000000", strokeThickness: 8,
-      })
-      .setOrigin(0.5)
-      .setDepth(101);
-    this.add
-      .text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 10, "所有关卡已通关!", {
-        fontFamily: "Arial", fontSize: "20px", color: "#ffffff",
-        align: "center", stroke: "#000000", strokeThickness: 4,
-      })
-      .setOrigin(0.5)
-      .setDepth(101);
-    const restartBtn = this.add
-      .text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 60, "再来一局", {
-        fontFamily: "Arial", fontSize: "24px", color: "#4a9eff",
-        align: "center", stroke: "#000000", strokeThickness: 4,
-      })
-      .setOrigin(0.5)
-      .setDepth(101)
-      .setInteractive();
-    restartBtn.on("pointerdown", () => this.scene.restart());
+    // 计算星级：城堡血量百分比
+    const hpRatio = this.state.castleHp / this.state.castleMaxHp;
+    let stars = 1;
+    if (hpRatio >= 0.8) stars = 3;
+    else if (hpRatio >= 0.5) stars = 2;
+
+    // 计算金币奖励
+    const goldEarned = this.state.gold + this.currentLevel * 50;
+
+    this.cameras.main.fadeOut(500, 0, 0, 0);
+    this.cameras.main.once("camerafadeoutcomplete", () => {
+      this.scene.start("VictoryScene", {
+        level: this.currentLevel,
+        stars,
+        goldEarned,
+      });
+    });
+  }
+
+  private togglePause() {
+    if (this.gameOverShown) return;
+    this.paused = !this.state.modalOpen && this.paused ? false : !this.paused;
+
+    if (this.paused) {
+      this.state.modalOpen = true;
+      this.showPauseOverlay();
+    } else {
+      this.state.modalOpen = false;
+      this.hidePauseOverlay();
+    }
+  }
+
+  private showPauseOverlay() {
+    if (this.pauseOverlay) return;
+
+    const container = this.add.container(0, 0).setDepth(150);
+
+    const shade = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.7);
+    container.add(shade);
+
+    createPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2 - 30, 320, 280, 0x1a2a3a, 0.95).setDepth(150);
+    container.add(this.children.list[this.children.list.length - 1]);
+
+    const title = createTitle(this, GAME_WIDTH / 2, GAME_HEIGHT / 2 - 120, "已暂停", "40px", "#ffffff");
+    title.setDepth(151);
+    container.add(title);
+
+    const continueBtn = createButton(this, GAME_WIDTH / 2, GAME_HEIGHT / 2 - 20, 200, 50, "继续游戏", 0x4a9eff, "22px");
+    continueBtn.setDepth(151);
+    continueBtn.on("pointerdown", () => this.togglePause());
+    container.add(continueBtn);
+
+    const returnBtn = createButton(this, GAME_WIDTH / 2, GAME_HEIGHT / 2 + 50, 200, 50, "返回关卡选择", 0x555555, "18px");
+    returnBtn.setDepth(151);
+    returnBtn.on("pointerdown", () => {
+      this.cameras.main.fadeOut(300, 0, 0, 0);
+      this.cameras.main.once("camerafadeoutcomplete", () => {
+        this.paused = false;
+        this.state.modalOpen = false;
+        this.scene.start("LevelSelectScene");
+      });
+    });
+    container.add(returnBtn);
+
+    this.pauseOverlay = container;
+  }
+
+  private hidePauseOverlay() {
+    if (this.pauseOverlay) {
+      this.pauseOverlay.destroy();
+      this.pauseOverlay = null;
+    }
   }
 
   private applyHpGrowth() {

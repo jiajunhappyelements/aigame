@@ -112,6 +112,18 @@ export type Upgrade = {
   apply: () => void;
 };
 
+export type GameData = {
+  level: number;
+  stars: number;
+  goldEarned: number;
+};
+
+export type SaveData = {
+  unlockedLevel: number;
+  stars: Record<number, number>;
+  gold: number;
+};
+
 export type GameState = {
   level: number;
   wave: number;

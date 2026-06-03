@@ -34,15 +34,7 @@ export class WaveSystem {
     const key = `${this.gs.level}-${this.gs.wave}`;
     const config = WAVE_CONFIGS[key];
     if (!config) {
-      if (this.gs.level >= WAVE.totalLevels) {
-        if (this.onVictory) this.onVictory();
-        return;
-      }
-      this.gs.wave = 1;
-      this.gs.level = Math.min(this.gs.level + 1, WAVE.totalLevels);
-      this.gs.unlockedAllies = getUnlockedAllies(this.gs.level);
-      this.gs.unlockedEnemies = getUnlockedEnemies(this.gs.level);
-      this.startWave();
+      if (this.onVictory) this.onVictory();
       return;
     }
 
@@ -93,15 +85,8 @@ export class WaveSystem {
   private advanceWave(): void {
     this.gs.wave++;
     if (this.gs.wave > WAVE.countPerLevel) {
-      if (this.gs.level >= WAVE.totalLevels) {
-        if (this.onVictory) this.onVictory();
-        return;
-      }
-      this.gs.wave = 1;
-      this.gs.level = Math.min(this.gs.level + 1, WAVE.totalLevels);
-      this.gs.unlockedAllies = getUnlockedAllies(this.gs.level);
-      this.gs.unlockedEnemies = getUnlockedEnemies(this.gs.level);
-      floatText(this.scene, GAME_WIDTH / 2, 200, `关卡 ${this.gs.level}!`, 0xffd700);
+      if (this.onVictory) this.onVictory();
+      return;
     }
     if (this.onWaveComplete) this.onWaveComplete();
     this.nextWaveTimer = WAVE.interWaveDelay;
