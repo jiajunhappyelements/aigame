@@ -124,6 +124,12 @@ export type SaveData = {
   gold: number;
 };
 
+export type Projectile = {
+  sprite: Phaser.GameObjects.Container;
+  cardId: AllyId;
+  state: import("./systems/BallPhysics").BallState;
+};
+
 export type GameState = {
   level: number;
   wave: number;
@@ -141,9 +147,7 @@ export type GameState = {
   pendingBall: Phaser.GameObjects.Container | null;
   dragging: boolean;
   modalOpen: boolean;
-  ballVx: number;
-  ballVy: number;
-  ballActive: boolean;
+  projectiles: Projectile[];
   launchCooldown: number;
   summonCountsThisWave: Record<string, number>;
   unlockedAllies: AllyId[];

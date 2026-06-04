@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import type { Fighter, GameState, AllyId } from "../types";
+import type { Fighter, GameState, AllyId, Projectile } from "../types";
 import { ALLY_SPECS } from "../config/units";
 import { LANES, SLINGSHOT, FIELD_LIMITS, GAME_WIDTH, GAME_HEIGHT, CASTLE } from "../config/game";
 import { updateBallPhysics, createBallState, isBallStopped, type BallState } from "./BallPhysics";
@@ -24,7 +24,6 @@ export class SlingshotSystem {
   private ballGraphic!: Phaser.GameObjects.Graphics;
   private rubberBand!: Phaser.GameObjects.Graphics;
   private trajectoryDots: Phaser.GameObjects.Arc[] = [];
-  private ballState: BallState | null = null;
 
   constructor(scene: Phaser.Scene, gs: GameState) {
     this.scene = scene;
@@ -56,12 +55,12 @@ export class SlingshotSystem {
 
   private setupInput(): void {
     this.scene.input.on("pointermove", (pointer: Phaser.Input.Pointer) => {
-      if (!this.gs.pendingCardId || !this.gs.dragging || this.gs.ballActive) return;
+      if (!this.gs.pendingCardId || !this.gs.dragging) return;
       this.handleDrag(pointer);
     });
 
     this.scene.input.on("pointerup", () => {
-      if (!this.gs.pendingCardId || !this.gs.dragging || this.gs.ballActive) return;
+      if (!this.gs.pendingCardId || !this.gs.dragging) return;
       this.handleRelease();
     });
   }
@@ -69,10 +68,6 @@ export class SlingshotSystem {
   showBall(cardId: AllyId): void {
     this.gs.pendingCardId = cardId;
     this.gs.dragging = false;
-    this.gs.ballActive = false;
-    this.gs.ballVx = 0;
-    this.gs.ballVy = 0;
-    this.ballState = null;
 
     this.ball.setPosition(LANES.slingX, LANES.slingY);
     this.ball.setVisible(true);
@@ -81,7 +76,7 @@ export class SlingshotSystem {
   }
 
   startDrag(pointer: Phaser.Input.Pointer): boolean {
-    if (!this.gs.pendingCardId || this.gs.ballActive) return false;
+    if (!this.gs.pendingCardId) return false;
     this.gs.dragging = true;
     return true;
   }
@@ -90,15 +85,12 @@ export class SlingshotSystem {
     let dx = pointer.x - LANES.slingX;
     let dy = pointer.y - LANES.slingY;
 
-    // 角度限制：发射方向在中心线（正上方）左右70°内
-    // 发射方向 = (-dx, -dy)，相对正上方的角度 = atan2(-dx, dy)
     const launchDx = -dx;
     const launchDy = -dy;
     const angle = Math.atan2(launchDx, -launchDy);
     if (Math.abs(angle) > MAX_ANGLE) {
       const clampedAngle = Math.sign(angle) * MAX_ANGLE;
       const pullDist = Math.sqrt(dx * dx + dy * dy);
-      // 重新计算拖拽偏移（与发射方向相反）
       dx = -Math.sin(clampedAngle) * pullDist;
       dy = Math.cos(clampedAngle) * pullDist;
     }
@@ -143,10 +135,28 @@ export class SlingshotSystem {
       return;
     }
 
-    this.gs.ballActive = true;
-    this.gs.ballVx = launch.vx;
-    this.gs.ballVy = launch.vy;
-    this.ballState = createBallState(bx, by, launch.vx, launch.vy);
+    const cardId = this.gs.pendingCardId!;
+
+    // 创建投射物精灵
+    const projSprite = this.scene.add.container(bx, by);
+    projSprite.setDepth(50);
+    const projGraphic = this.scene.add.graphics();
+    projGraphic.fillStyle(0x4a9eff, 1);
+    projGraphic.fillCircle(0, 0, BALL_RADIUS);
+    projGraphic.lineStyle(2, 0xffffff, 0.8);
+    projGraphic.strokeCircle(0, 0, BALL_RADIUS);
+    projSprite.add(projGraphic);
+
+    // 加入飞行队列
+    this.gs.projectiles.push({
+      sprite: projSprite,
+      cardId,
+      state: createBallState(bx, by, launch.vx, launch.vy),
+    });
+
+    // 弹射器立即重置，可以选下一张卡
+    this.ball.setVisible(false);
+    this.gs.pendingCardId = null;
   }
 
   private computeLaunchVelocity(
@@ -168,19 +178,21 @@ export class SlingshotSystem {
   }
 
   update(dt: number): void {
-    if (!this.gs.ballActive || !this.ballState) return;
+    // 遍历所有飞行中的投射物
+    for (let i = this.gs.projectiles.length - 1; i >= 0; i--) {
+      const proj = this.gs.projectiles[i];
+      proj.state = updateBallPhysics(proj.state, dt);
+      proj.sprite.setPosition(proj.state.x, proj.state.y);
 
-    this.ballState = updateBallPhysics(this.ballState!, dt);
-    this.ball.setPosition(this.ballState.x, this.ballState.y);
+      const hitEnemy = this.findEnemyHit(proj.state.x, proj.state.y);
+      if (hitEnemy) {
+        this.landBall(proj, hitEnemy);
+        continue;
+      }
 
-    const hitEnemy = this.findEnemyHit(this.ballState.x, this.ballState.y);
-    if (hitEnemy) {
-      this.landBall(this.ballState.x, this.ballState.y, hitEnemy);
-      return;
-    }
-
-    if (isBallStopped(this.ballState)) {
-      this.landBall(this.ballState.x, this.ballState.y, null);
+      if (isBallStopped(proj.state)) {
+        this.landBall(proj, null);
+      }
     }
   }
 
@@ -194,22 +206,24 @@ export class SlingshotSystem {
     return null;
   }
 
-  private landBall(x: number, y: number, hitEnemy: Fighter | null): void {
-    const cardId = this.gs.pendingCardId!;
-    this.gs.ballActive = false;
-    this.gs.pendingCardId = null;
-    this.gs.dragging = false;
-    this.ballState = null;
+  private landBall(proj: Projectile, hitEnemy: Fighter | null): void {
+    const cardId = proj.cardId;
+    const x = proj.state.x;
+    const y = proj.state.y;
+
+    // 从飞行队列中移除
+    const idx = this.gs.projectiles.indexOf(proj);
+    if (idx !== -1) this.gs.projectiles.splice(idx, 1);
 
     exposureFlash(this.scene, x, y);
 
+    // 投射物淡出
     this.scene.tweens.add({
-      targets: this.ball,
+      targets: proj.sprite,
       alpha: 0,
       duration: 150,
       onComplete: () => {
-        this.ball.setVisible(false);
-        this.ball.setAlpha(1);
+        proj.sprite.destroy();
 
         const spec = ALLY_SPECS[cardId];
         const fighter = createFighter(this.scene, cardId, "ally", x, y, spec);
@@ -297,9 +311,7 @@ export class SlingshotSystem {
       }
     }
     this.gs.pendingCardId = null;
-    this.gs.ballActive = false;
     this.gs.dragging = false;
-    this.ballState = null;
     this.ball.setVisible(false);
     this.rubberBand.clear();
     this.hideTrajectory();

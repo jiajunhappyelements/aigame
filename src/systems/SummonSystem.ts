@@ -26,8 +26,6 @@ export class SummonSystem {
       this.gs.dragging = false;
     }
 
-    if (this.gs.ballActive) return false;
-
     if (this.gs.stamina < spec.staminaCost) {
       floatText(scene, GAME_WIDTH / 2, LANES.summonY - 30, "体力不足", 0xff5b4f);
       return false;

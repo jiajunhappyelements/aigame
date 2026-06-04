@@ -85,7 +85,6 @@ export class CardPanel {
 
     const hitZone = this.scene.add.zone(0, 0, CARD_W, CARD_H).setInteractive({ useHandCursor: true });
     hitZone.on("pointerdown", () => {
-      if (this.gs.ballActive) return;
       this.onSelectCard(allyId);
     });
 
@@ -113,8 +112,7 @@ export class CardPanel {
 
       const canAfford = curSt >= spec.staminaCost;
       const atFieldLimit = this.gs.allies.filter(a => a.active).length >= FIELD_LIMITS.maxAllies;
-      const hasBall = this.gs.ballActive;
-      const available = canAfford && !atFieldLimit && !hasBall && remain > 0;
+      const available = canAfford && !atFieldLimit && remain > 0;
       card.setAlpha(available ? 1 : 0.4);
 
       if (allyId === this.gs.pendingCardId) {

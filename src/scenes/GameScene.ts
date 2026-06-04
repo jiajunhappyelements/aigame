@@ -68,7 +68,6 @@ export class GameScene extends Phaser.Scene {
     });
 
     this.cardPanel = new CardPanel(this, this.state, (allyId: AllyId) => {
-      if (this.state.ballActive) return;
       if (this.summonSystem.selectCard(allyId, this)) {
         this.slingshotSystem.showBall(allyId);
       }
