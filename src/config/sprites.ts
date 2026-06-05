@@ -8,4 +8,6 @@ export const SPRITE_DEFS: SpriteDef[] = [
   { key: "unit-mage",    path: "/assets/sprites/unit-mage.png" },
   { key: "coin",         path: "/assets/sprites/coin.png" },
   { key: "wall",         path: "/assets/sprites/wall.png" },
+  { key: "bg-battle",    path: "/assets/sprites/bg-battle.png" },
+  { key: "wall-new",    path: "/assets/sprites/wall-new.png" },
 ];

@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 import { GAME_WIDTH, GAME_HEIGHT, createInitialState, LANES, CASTLE, LEVEL_COUNT, loadSave, saveSave, WAVE } from "../config/game";
-import { createBackdrop } from "../render/backdrop";
 import { createSpriteTextures } from "../render/spriteTextures";
 import { createConfiguredAnimations } from "../render/animations";
 import { ANIMATION_ATLAS } from "../config/animations";
@@ -53,7 +52,22 @@ export class GameScene extends Phaser.Scene {
     this.state = createInitialState(this.currentLevel);
     createSpriteTextures(this);
     createConfiguredAnimations(this);
-    createBackdrop(this);
+
+    // 游戏背景
+    const bg = this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, "bg-battle");
+    bg.setDisplaySize(GAME_WIDTH, GAME_HEIGHT);
+    bg.setDepth(0);
+
+    // 城墙（底部）
+    const wall = this.add.image(GAME_WIDTH / 2, GAME_HEIGHT, "wall-new");
+    wall.setOrigin(0.5, 1);
+    wall.setDisplaySize(GAME_WIDTH, wall.height * (GAME_WIDTH / wall.width));
+    wall.setDepth(1);
+
+    // 弹弓支架
+    const { slingX, slingY } = LANES;
+    this.add.circle(slingX - 33, slingY - 2, 7, 0xd7b27c).setDepth(2);
+    this.add.circle(slingX + 33, slingY - 2, 7, 0xd7b27c).setDepth(2);
 
     this.staminaSystem = new StaminaSystem(this.state);
     this.combatSystem = new CombatSystem(this, this.state);
