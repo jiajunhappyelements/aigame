@@ -9,7 +9,7 @@ export const SPRITE_DEFS: SpriteDef[] = [
   { key: "coin",         path: "/assets/sprites/coin.png" },
   { key: "wall",         path: "/assets/sprites/wall.png" },
   { key: "bg-battle",    path: "/assets/sprites/bg-battle.png" },
-  { key: "wall-new",    path: "/assets/sprites/wall-new.png" },
+  { key: "wall-new",    path: "/assets/sprites/wall-new-transparent.png" },
   { key: "portrait-A01", path: "/assets/portraits/ally-A01.png" },
   { key: "portrait-A02", path: "/assets/portraits/ally-A02.png" },
   { key: "portrait-A03", path: "/assets/portraits/ally-A03.png" },
