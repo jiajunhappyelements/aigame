@@ -1,5 +1,6 @@
 import Phaser from "phaser";
-import type { GameState, Upgrade } from "../types";
+import type { AllyId, GameState, Upgrade } from "../types";
+import { getAllyPortrait } from "../config/portraits";
 import { ALLY_SPECS } from "../config/units";
 import { floatText } from "./Effects";
 
@@ -42,7 +43,8 @@ export class UpgradeSystem {
     const pool: Upgrade[] = [];
 
     for (const ally of this.gs.allies) {
-      const spec = ALLY_SPECS[ally.id as keyof typeof ALLY_SPECS];
+      const allyId = ally.id as AllyId;
+      const spec = ALLY_SPECS[allyId];
       if (!spec) continue;
 
       if (spec.skill1 && ally.skill1Level < 3) {
@@ -52,7 +54,7 @@ export class UpgradeSystem {
           id: `${ally.id}_s1_lv${lv}`,
           title: `${spec.name}·${spec.skill1.name}`,
           desc: `技能升至Lv${lv}`,
-          icon: spec.texture,
+          icon: getAllyPortrait(allyId),
           apply: () => { ally.skill1Level = lv; }
         });
       }
@@ -64,7 +66,7 @@ export class UpgradeSystem {
           id: `${ally.id}_s2_lv${lv}`,
           title: `${spec.name}·${spec.skill2.name}`,
           desc: `技能升至Lv${lv}`,
-          icon: spec.texture,
+          icon: getAllyPortrait(allyId),
           apply: () => { ally.skill2Level = lv; }
         });
       }

@@ -5,7 +5,12 @@ import { LevelSelectScene } from "./scenes/LevelSelectScene";
 import { GameScene } from "./scenes/GameScene";
 import { VictoryScene } from "./scenes/VictoryScene";
 import { DefeatScene } from "./scenes/DefeatScene";
+import { AnimationLabScene } from "./scenes/AnimationLabScene";
 import "./style.css";
+
+const debugScene = new URLSearchParams(window.location.search).get("debug");
+const gameScenes = [TitleScene, LevelSelectScene, GameScene, VictoryScene, DefeatScene];
+const scenes = debugScene === "animations" ? [AnimationLabScene, ...gameScenes] : gameScenes;
 
 new Phaser.Game({
   type: Phaser.AUTO,
@@ -24,5 +29,5 @@ new Phaser.Game({
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH
   },
-  scene: [TitleScene, LevelSelectScene, GameScene, VictoryScene, DefeatScene]
+  scene: scenes
 });

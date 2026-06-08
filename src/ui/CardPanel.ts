@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import type { AllyId, GameState } from "../types";
 import { ALLY_SPECS } from "../config/units";
+import { getAllyPortrait } from "../config/portraits";
 import { FIELD_LIMITS, GAME_HEIGHT, GAME_WIDTH } from "../config/game";
 
 const CARD_W = 48;
@@ -67,7 +68,7 @@ export class CardPanel {
     const bgRect = this.scene.add.rectangle(0, 0, CARD_W, CARD_H, spec.tint, 0.7)
       .setStrokeStyle(2, 0xffffff);
 
-    const icon = this.scene.add.image(0, -4, spec.texture).setDisplaySize(28, 28);
+    const icon = this.scene.add.image(0, -4, getAllyPortrait(allyId)).setDisplaySize(34, 34);
     const costText = this.scene.add.text(CARD_W / 2 - 2, -CARD_H / 2 + 2, `${spec.staminaCost}`, {
       fontFamily: "Arial", fontSize: "10px", color: "#ffffff",
       stroke: "#000000", strokeThickness: 3
