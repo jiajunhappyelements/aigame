@@ -66,8 +66,8 @@ export class GameScene extends Phaser.Scene {
 
     // 弹弓支架
     const { slingX, slingY } = LANES;
-    this.add.circle(slingX - 33, slingY - 2, 7, 0xd7b27c).setDepth(2);
-    this.add.circle(slingX + 33, slingY - 2, 7, 0xd7b27c).setDepth(2);
+    this.add.circle(slingX - 55, slingY - 2, 7, 0xd7b27c).setDepth(2);
+    this.add.circle(slingX + 55, slingY - 2, 7, 0xd7b27c).setDepth(2);
 
     this.staminaSystem = new StaminaSystem(this.state);
     this.combatSystem = new CombatSystem(this, this.state);
@@ -170,12 +170,6 @@ export class GameScene extends Phaser.Scene {
   }
 
   private showVictory() {
-    // 计算星级：城堡血量百分比
-    const hpRatio = this.state.castleHp / this.state.castleMaxHp;
-    let stars = 1;
-    if (hpRatio >= 0.8) stars = 3;
-    else if (hpRatio >= 0.5) stars = 2;
-
     // 计算金币奖励
     const goldEarned = this.state.gold + this.currentLevel * 50;
 
@@ -183,7 +177,6 @@ export class GameScene extends Phaser.Scene {
     this.cameras.main.once("camerafadeoutcomplete", () => {
       this.scene.start("VictoryScene", {
         level: this.currentLevel,
-        stars,
         goldEarned,
       });
     });

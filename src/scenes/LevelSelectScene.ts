@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { GAME_WIDTH, GAME_HEIGHT, LEVEL_COUNT, LEVEL_NAMES, loadSave } from "../config/game";
-import { createButton, createTitle, createStarDisplay } from "../ui/UIHelper";
+import { createButton, createTitle } from "../ui/UIHelper";
 
 const CARD_W = 160;
 const CARD_H = 220;
@@ -46,8 +46,7 @@ export class LevelSelectScene extends Phaser.Scene {
     const centerY = GAME_HEIGHT / 2 + 20;
 
     for (let i = 1; i <= LEVEL_COUNT; i++) {
-      const stars = save.stars[i] || 0;
-      const card = this.createLevelCard(i, stars);
+      const card = this.createLevelCard(i);
       card.setData("index", i - 1);
       card.setData("baseY", centerY);
       this.cardContainer.add(card);
@@ -99,26 +98,6 @@ export class LevelSelectScene extends Phaser.Scene {
       }
 
       this.targetScrollX = this.currentIndex * CARD_SPACING;
-    });
-
-    // 左右箭头按钮
-    const arrowY = centerY;
-    const leftBtn = createButton(this, 40, arrowY, 50, 80, "<", 0x333333, "32px");
-    leftBtn.setDepth(10);
-    leftBtn.on("pointerdown", () => {
-      if (this.currentIndex > 0) {
-        this.currentIndex--;
-        this.targetScrollX = this.currentIndex * CARD_SPACING;
-      }
-    });
-
-    const rightBtn = createButton(this, GAME_WIDTH - 40, arrowY, 50, 80, ">", 0x333333, "32px");
-    rightBtn.setDepth(10);
-    rightBtn.on("pointerdown", () => {
-      if (this.currentIndex < LEVEL_COUNT - 1) {
-        this.currentIndex++;
-        this.targetScrollX = this.currentIndex * CARD_SPACING;
-      }
     });
 
     // 开始按钮
@@ -183,7 +162,7 @@ export class LevelSelectScene extends Phaser.Scene {
     }
   }
 
-  private createLevelCard(level: number, stars: number): Phaser.GameObjects.Container {
+  private createLevelCard(level: number): Phaser.GameObjects.Container {
     const container = this.add.container(0, 0);
 
     // 卡片背景
@@ -205,17 +184,13 @@ export class LevelSelectScene extends Phaser.Scene {
     container.add(numText);
 
     // 关卡名
-    const nameText = this.add.text(0, 10, LEVEL_NAMES[level] || "", {
+    const nameText = this.add.text(0, 20, LEVEL_NAMES[level] || "", {
       fontFamily: "Arial",
       fontSize: "18px",
       color: "#cccccc",
       align: "center",
     }).setOrigin(0.5);
     container.add(nameText);
-
-    // 星级
-    const starContainer = createStarDisplay(this, 0, 55, stars);
-    container.add(starContainer);
 
     // 装饰角标
     const corner = this.add.graphics();

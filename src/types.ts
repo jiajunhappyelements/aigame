@@ -116,13 +116,11 @@ export type Upgrade = {
 
 export type GameData = {
   level: number;
-  stars: number;
   goldEarned: number;
 };
 
 export type SaveData = {
   unlockedLevel: number;
-  stars: Record<number, number>;
   gold: number;
 };
 

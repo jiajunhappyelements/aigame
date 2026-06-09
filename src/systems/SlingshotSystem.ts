@@ -105,8 +105,8 @@ export class SlingshotSystem {
     let bx = LANES.slingX + dx;
     let by = LANES.slingY + dy;
 
-    bx = Phaser.Math.Clamp(bx, 30, GAME_WIDTH - 30);
-    by = Phaser.Math.Clamp(by, 30, GAME_HEIGHT - 30);
+    bx = Phaser.Math.Clamp(bx, LANES.leftBound, LANES.rightBound);
+    by = Phaser.Math.Clamp(by, LANES.topBound, LANES.bottomBound);
 
     this.ball.setPosition(bx, by);
     this.drawRubberBand(bx, by);
@@ -137,8 +137,10 @@ export class SlingshotSystem {
 
     const cardId = this.gs.pendingCardId!;
 
-    // 创建投射物精灵
-    const projSprite = this.scene.add.container(bx, by);
+    // 创建投射物精灵 — 从弹弓中心发射
+    const launchX = LANES.slingX;
+    const launchY = LANES.slingY;
+    const projSprite = this.scene.add.container(launchX, launchY);
     projSprite.setDepth(50);
     const projGraphic = this.scene.add.graphics();
     projGraphic.fillStyle(0x4a9eff, 1);
@@ -147,11 +149,11 @@ export class SlingshotSystem {
     projGraphic.strokeCircle(0, 0, BALL_RADIUS);
     projSprite.add(projGraphic);
 
-    // 加入飞行队列
+    // 加入飞行队列 — 从弹弓中心出发
     this.gs.projectiles.push({
       sprite: projSprite,
       cardId,
-      state: createBallState(bx, by, launch.vx, launch.vy),
+      state: createBallState(launchX, launchY, launch.vx, launch.vy),
     });
 
     // 弹射器立即重置，可以选下一张卡
@@ -272,9 +274,9 @@ export class SlingshotSystem {
   private drawRubberBand(bx: number, by: number): void {
     this.rubberBand.clear();
     this.rubberBand.lineStyle(RUBBER_WIDTH, RUBBER_COLOR, 1);
-    this.rubberBand.moveTo(LANES.slingX - 33, LANES.slingY - 2);
+    this.rubberBand.moveTo(LANES.slingX - 55, LANES.slingY - 2);
     this.rubberBand.lineTo(bx, by);
-    this.rubberBand.lineTo(LANES.slingX + 33, LANES.slingY - 2);
+    this.rubberBand.lineTo(LANES.slingX + 55, LANES.slingY - 2);
     this.rubberBand.strokePath();
   }
 

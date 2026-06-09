@@ -8,13 +8,13 @@ export const TILE_SIZE = 96;
 
 export const LANES = {
   wallY: 780,
-  summonY: 870,
+  summonY: 760,
   slingX: 270,
-  slingY: 870,
+  slingY: 760,
   topBound: 50,
-  leftBound: 0,
-  rightBound: GAME_WIDTH,
-  bottomBound: GAME_HEIGHT,
+  leftBound: 40,
+  rightBound: 500,
+  bottomBound: 830,
 };
 
 export const STAMINA = {
@@ -68,15 +68,15 @@ export const LEVEL_NAMES: Record<number, string> = {
 
 const SAVE_KEY = "sling-guardians-save";
 
-export function loadSave(): { unlockedLevel: number; stars: Record<number, number>; gold: number } {
+export function loadSave(): { unlockedLevel: number; gold: number } {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
     if (raw) return JSON.parse(raw);
   } catch {}
-  return { unlockedLevel: 1, stars: {}, gold: 0 };
+  return { unlockedLevel: 1, gold: 0 };
 }
 
-export function saveSave(data: { unlockedLevel: number; stars: Record<number, number>; gold: number }) {
+export function saveSave(data: { unlockedLevel: number; gold: number }) {
   localStorage.setItem(SAVE_KEY, JSON.stringify(data));
 }
 

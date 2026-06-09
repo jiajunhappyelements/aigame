@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { GAME_WIDTH, GAME_HEIGHT, LEVEL_COUNT, loadSave, saveSave } from "../config/game";
-import { createButton, createPanel, createTitle, createStarDisplay } from "../ui/UIHelper";
+import { createButton, createPanel, createTitle } from "../ui/UIHelper";
 import type { GameData } from "../types";
 
 export class VictoryScene extends Phaser.Scene {
@@ -10,14 +10,10 @@ export class VictoryScene extends Phaser.Scene {
 
   create(data: GameData) {
     const level = data.level || 1;
-    const stars = data.stars || 1;
     const goldEarned = data.goldEarned || 0;
 
     // 更新存档
     const save = loadSave();
-    if (stars > (save.stars[level] || 0)) {
-      save.stars[level] = stars;
-    }
     save.gold += goldEarned;
     if (level >= save.unlockedLevel && level < LEVEL_COUNT) {
       save.unlockedLevel = level + 1;
@@ -31,10 +27,7 @@ export class VictoryScene extends Phaser.Scene {
     createPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2 - 20, 400, 420, 0x1a2a3a, 0.95);
 
     // 标题
-    createTitle(this, GAME_WIDTH / 2, GAME_HEIGHT / 2 - 160, "胜利!", "52px", "#ffd700");
-
-    // 星级
-    createStarDisplay(this, GAME_WIDTH / 2, GAME_HEIGHT / 2 - 90, stars);
+    createTitle(this, GAME_WIDTH / 2, GAME_HEIGHT / 2 - 130, "胜利!", "52px", "#ffd700");
 
     // 金币奖励
     this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 30, `获得金币: +${goldEarned}`, {

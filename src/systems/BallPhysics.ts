@@ -12,8 +12,6 @@ export function createBallState(x: number, y: number, vx: number, vy: number): B
   return { x, y, vx, vy, onGround: false };
 }
 
-const GROUND_Y = CASTLE.y - 50;
-const TOP_BOUND = LANES.topBound;
 const DECEL = 0.985;
 const BOUNCE_DAMPING = 0.7;
 const STOP_SPEED = 15;
@@ -29,10 +27,10 @@ export function updateBallPhysics(state: BallState, dt: number): BallState {
   vx *= drag;
   vy *= drag;
 
-  if (x < 20) { x = 20; vx = Math.abs(vx) * BOUNCE_DAMPING; }
-  if (x > GAME_WIDTH - 20) { x = GAME_WIDTH - 20; vx = -Math.abs(vx) * BOUNCE_DAMPING; }
-  if (y < TOP_BOUND) { y = TOP_BOUND; vy = Math.abs(vy) * BOUNCE_DAMPING; }
-  if (y > GROUND_Y) { y = GROUND_Y; vy = -Math.abs(vy) * BOUNCE_DAMPING; }
+  if (x < LANES.leftBound) { x = LANES.leftBound; vx = Math.abs(vx) * BOUNCE_DAMPING; }
+  if (x > LANES.rightBound) { x = LANES.rightBound; vx = -Math.abs(vx) * BOUNCE_DAMPING; }
+  if (y < LANES.topBound) { y = LANES.topBound; vy = Math.abs(vy) * BOUNCE_DAMPING; }
+  if (y > LANES.bottomBound) { y = LANES.bottomBound; vy = -Math.abs(vy) * BOUNCE_DAMPING; }
 
   return { x, y, vx, vy, onGround: false };
 }

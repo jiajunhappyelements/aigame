@@ -17,6 +17,6 @@ export function createBackdrop(scene: Phaser.Scene): void {
   scene.add.image(GAME_WIDTH / 2, wallY + 8, "wall").setDisplaySize(410, 120).setDepth(1);
   scene.add.rectangle(GAME_WIDTH / 2, wallY + 72, GAME_WIDTH, 110, 0x2b3542, 0.84).setDepth(1);
 
-  scene.add.circle(slingX - 33, slingY - 2, 7, 0xd7b27c).setDepth(2);
-  scene.add.circle(slingX + 33, slingY - 2, 7, 0xd7b27c).setDepth(2);
+  scene.add.circle(slingX - 55, slingY - 2, 7, 0xd7b27c).setDepth(2);
+  scene.add.circle(slingX + 55, slingY - 2, 7, 0xd7b27c).setDepth(2);
 }
