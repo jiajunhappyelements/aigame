@@ -39,7 +39,7 @@ export function createFighter(
   container.maxHp = hp;
   container.atk = spec.atk;
   container.range = spec.range;
-  container.speed = spec.moveSpd;
+  container.speed = spec.moveSpd * (team === "ally" ? 0.9 : 0.8);
   container.attackCd = Math.round(1000 / spec.atkSpd);
   container.attackTimer = Phaser.Math.Between(0, 400);
   container.launched = false;
@@ -58,6 +58,7 @@ export function createFighter(
   container.moveTime = 0;
   if (!isAlly) {
     container.bounty = (spec as EnemySpec).bounty;
+    container.detectionRange = (spec as EnemySpec).detectionRange;
   }
 
   const depth = spec.moveMode === "flying" ? 16 : 8;

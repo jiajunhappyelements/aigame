@@ -82,11 +82,9 @@ export class CombatSystem {
   private processEnemies(dt: number, now: number): void {
     for (const enemy of this.gs.enemies) {
       if (!enemy.active) continue;
-      let allyTarget = this.findEnemyTarget(enemy);
-      if (allyTarget && allyTarget.y > enemy.y && enemy.y >= CASTLE_ATTACK_LINE) {
-        allyTarget = null;
-      }
+      const allyTarget = this.findEnemyTarget(enemy);
       if (allyTarget) {
+        // Always prioritize ally units: move toward them and attack
         const dist = Phaser.Math.Distance.Between(enemy.x, enemy.y, allyTarget.x, allyTarget.y);
         if (dist > enemy.range) {
           playFighterBaseAnimation(enemy);
@@ -109,7 +107,6 @@ export class CombatSystem {
           this.moveToward(enemy, enemy.x, CASTLE_ATTACK_LINE, dt, now);
           enemy.attackTimer = 0;
         } else {
-          // At castle: attack it periodically
           enemy.attackTimer -= dt;
           if (enemy.attackTimer <= 0) {
             this.enemyAttackCastle(enemy);
@@ -156,7 +153,11 @@ export class CombatSystem {
   }
 
   private findEnemyTarget(enemy: Fighter): Fighter | null {
-    const activeAllies = this.gs.allies.filter(a => a.active);
+    const dr = enemy.detectionRange ?? enemy.range;
+    const activeAllies = this.gs.allies.filter(a => {
+      if (!a.active) return false;
+      return Phaser.Math.Distance.Between(enemy.x, enemy.y, a.x, a.y) <= dr;
+    });
     if (activeAllies.length === 0) return null;
 
     if (enemy.moveMode === "flying") {

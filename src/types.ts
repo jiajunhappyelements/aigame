@@ -45,6 +45,7 @@ export type EnemySpec = {
   atkSpd: number;
   moveSpd: number;
   range: number;
+  detectionRange: number;
   traits: string[];
   traitDesc: string;
   bounty: number;
@@ -61,6 +62,7 @@ export type Fighter = Phaser.GameObjects.Container & {
   maxHp: number;
   atk: number;
   range: number;
+  detectionRange?: number;
   speed: number;
   attackCd: number;
   attackTimer: number;

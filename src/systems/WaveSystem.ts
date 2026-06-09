@@ -76,7 +76,7 @@ export class WaveSystem {
   private spawnEnemy(enemyId: EnemyId): void {
     const spec = ENEMY_SPECS[enemyId];
     const x = Phaser.Math.Between(60, GAME_WIDTH - 60);
-    const y = -30;
+    const y = Phaser.Math.Between(20, 60);
     const enemy = createFighter(this.scene, enemyId, "enemy", x, y, spec);
     enemy.setDepth(enemy.moveMode === "flying" ? 16 : 8);
     this.gs.enemies.push(enemy);
