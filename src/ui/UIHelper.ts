@@ -30,6 +30,7 @@ export function createButton(
   container.add([bg, label]);
   container.setSize(width, height);
   container.setInteractive();
+  container.setData("clickSound", "hud-button-click");
 
   container.on("pointerover", () => container.setScale(1.05));
   container.on("pointerout", () => container.setScale(1.0));

@@ -1,10 +1,17 @@
 import Phaser from "phaser";
 import { GAME_WIDTH, GAME_HEIGHT } from "../config/game";
+import { AudioSystem } from "../systems/AudioSystem";
 import { createButton, createTitle } from "../ui/UIHelper";
 
 export class TitleScene extends Phaser.Scene {
+  private audio = new AudioSystem();
+
   constructor() {
     super({ key: "TitleScene" });
+  }
+
+  preload() {
+    this.audio.preload(this);
   }
 
   create() {
@@ -45,6 +52,8 @@ export class TitleScene extends Phaser.Scene {
     // 开始按钮
     const startBtn = createButton(this, GAME_WIDTH / 2, 560, 220, 60, "开始游戏", 0x4a9eff, "28px");
     startBtn.on("pointerdown", () => {
+      this.audio.play(this, "hud-button-click");
+      this.audio.stopBgm();
       this.cameras.main.fadeOut(300, 0, 0, 0);
       this.cameras.main.once("camerafadeoutcomplete", () => {
         this.scene.start("LevelSelectScene");
@@ -61,5 +70,6 @@ export class TitleScene extends Phaser.Scene {
 
     // 淡入效果
     this.cameras.main.fadeIn(500, 0, 0, 0);
+    this.audio.playBgm(this, "hud-bgm");
   }
 }

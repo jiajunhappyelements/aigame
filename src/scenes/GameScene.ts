@@ -10,6 +10,7 @@ import { SlingshotSystem } from "../systems/SlingshotSystem";
 import { WaveSystem } from "../systems/WaveSystem";
 import { UpgradeSystem } from "../systems/UpgradeSystem";
 import { SummonSystem } from "../systems/SummonSystem";
+import { AudioSystem } from "../systems/AudioSystem";
 import { UpgradeModal } from "../ui/UpgradeModal";
 import { Hud } from "../ui/Hud";
 import { ActionButtons } from "../ui/ActionButtons";
@@ -19,6 +20,7 @@ import { ALLY_SPECS } from "../config/units";
 import type { AllyId, GameState } from "../types";
 
 export class GameScene extends Phaser.Scene {
+  private audio = new AudioSystem();
   private state!: GameState;
   private hud!: Hud;
   private cardPanel!: CardPanel;
@@ -38,6 +40,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   preload() {
+    this.audio.preload(this);
     for (const def of SPRITE_DEFS) {
       this.load.image(def.key, def.path);
     }
@@ -52,6 +55,7 @@ export class GameScene extends Phaser.Scene {
     this.state = createInitialState(this.currentLevel);
     createSpriteTextures(this);
     createConfiguredAnimations(this);
+    this.audio.playBgm(this, this.currentLevel <= 4 ? "stage1" : "stage2");
 
     // 游戏背景
     const bg = this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, "bg-battle");
@@ -162,6 +166,8 @@ export class GameScene extends Phaser.Scene {
     this.gameOverShown = true;
     this.slingshotSystem.cancelPending();
     this.state.castleHp = 0;
+    this.audio.stopBgm();
+    this.audio.play(this, "game-over");
 
     this.cameras.main.fadeOut(500, 0, 0, 0);
     this.cameras.main.once("camerafadeoutcomplete", () => {
@@ -172,6 +178,8 @@ export class GameScene extends Phaser.Scene {
   private showVictory() {
     // 计算金币奖励
     const goldEarned = this.state.gold + this.currentLevel * 50;
+    this.audio.stopBgm();
+    this.audio.play(this, "game-win");
 
     this.cameras.main.fadeOut(500, 0, 0, 0);
     this.cameras.main.once("camerafadeoutcomplete", () => {
