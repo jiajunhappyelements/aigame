@@ -17,13 +17,9 @@ export class VictoryScene extends Phaser.Scene {
 
   create(data: GameData) {
     const level = data.level || 1;
-    const stars = data.stars || 1;
     const goldEarned = data.goldEarned || 0;
 
     const save = loadSave();
-    if (stars > (save.stars[level] || 0)) {
-      save.stars[level] = stars;
-    }
     save.gold += goldEarned;
     if (level >= save.unlockedLevel && level < LEVEL_COUNT) {
       save.unlockedLevel = level + 1;

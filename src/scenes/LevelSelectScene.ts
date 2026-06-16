@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { GAME_WIDTH, GAME_HEIGHT, LEVEL_COUNT, LEVEL_NAMES, loadSave } from "../config/game";
 import { AudioSystem } from "../systems/AudioSystem";
-import { createButton, createTitle, createStarDisplay } from "../ui/UIHelper";
+import { createButton, createTitle } from "../ui/UIHelper";
 
 const CARD_W = 160;
 const CARD_H = 220;
@@ -48,8 +48,7 @@ export class LevelSelectScene extends Phaser.Scene {
     const centerY = GAME_HEIGHT / 2 + 20;
 
     for (let i = 1; i <= LEVEL_COUNT; i++) {
-      const stars = save.stars[i] || 0;
-      const card = this.createLevelCard(i, stars);
+      const card = this.createLevelCard(i);
       card.setData("index", i - 1);
       card.setData("baseY", centerY);
       this.cardContainer.add(card);
@@ -178,7 +177,7 @@ export class LevelSelectScene extends Phaser.Scene {
     }
   }
 
-  private createLevelCard(level: number, stars: number): Phaser.GameObjects.Container {
+  private createLevelCard(level: number): Phaser.GameObjects.Container {
     const container = this.add.container(0, 0);
 
     const bg = this.add.graphics();
@@ -204,9 +203,6 @@ export class LevelSelectScene extends Phaser.Scene {
       align: "center",
     }).setOrigin(0.5);
     container.add(nameText);
-
-    const starContainer = createStarDisplay(this, 0, 55, stars);
-    container.add(starContainer);
 
     const corner = this.add.graphics();
     corner.fillStyle(0x4a9eff, 0.3);
