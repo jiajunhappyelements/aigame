@@ -29,6 +29,6 @@ export class StaminaSystem {
   }
 
   addWaveStamina(): void {
-    this.gs.stamina = Math.min(this.gs.staminaMax, this.gs.stamina + STAMINA.initialPerWave);
+    this.gs.stamina = Math.min(this.gs.staminaMax, this.gs.stamina + STAMINA.getInitialStamina(this.gs.level));
   }
 }

@@ -104,7 +104,8 @@ export class CardPanel {
     for (const [allyId, card] of this.cards) {
       const spec = ALLY_SPECS[allyId];
       const sameNameCount = this.gs.allies.filter(a => a.id === allyId && a.active).length;
-      const remain = spec.maxSameName - sameNameCount;
+      const inflightCount = this.gs.projectiles.filter(p => p.cardId === allyId).length;
+      const remain = spec.maxSameName - sameNameCount - inflightCount;
       const remainObj = card.getByName("remain") as Phaser.GameObjects.Text;
       if (remainObj) {
         remainObj.setText(`${remain}`);

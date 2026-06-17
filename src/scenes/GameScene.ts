@@ -80,9 +80,9 @@ export class GameScene extends Phaser.Scene {
     this.slingshotSystem = new SlingshotSystem(this, this.state);
 
     const upgradeModal = new UpgradeModal(this);
-    this.upgradeSystem = new UpgradeSystem(this.state, (upgrades, onPick) => {
+    this.upgradeSystem = new UpgradeSystem(this.state, (upgrades, onPick, onClose) => {
       this.slingshotSystem.cancelPending();
-      upgradeModal.open(upgrades, onPick);
+      upgradeModal.open(upgrades, onPick, onClose);
     });
 
     this.cardPanel = new CardPanel(this, this.state, (allyId: AllyId) => {
@@ -96,6 +96,7 @@ export class GameScene extends Phaser.Scene {
     });
 
     this.slingshotSystem.setCombatSystem(this.combatSystem);
+    this.slingshotSystem.setUpgradeSystem(this.upgradeSystem);
     this.hud = new Hud(this, this.state);
 
     // 暂停按钮
@@ -105,7 +106,9 @@ export class GameScene extends Phaser.Scene {
 
     this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
       if (this.state.modalOpen) return;
+      // Skip left panel area and top-right button area
       if (pointer.x < 56) return;
+      if (pointer.x > GAME_WIDTH - 80 && pointer.y < 120) return;
       this.slingshotSystem.startDrag(pointer);
     });
 

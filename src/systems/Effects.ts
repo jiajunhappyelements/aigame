@@ -31,6 +31,36 @@ export function floatText(scene: Phaser.Scene, x: number, y: number, str: string
   });
 }
 
+export function showToast(scene: Phaser.Scene, x: number, y: number, str: string): void {
+  const paddingX = 20;
+  const paddingY = 10;
+  const text = scene.add.text(x, y, str, {
+    fontFamily: "Arial",
+    fontSize: "18px",
+    color: "#ffffff",
+    stroke: "#000000",
+    strokeThickness: 3,
+  }).setOrigin(0.5).setDepth(250);
+
+  const bounds = text.getBounds();
+  const bg = scene.add.rectangle(
+    text.x, text.y,
+    bounds.width + paddingX * 2,
+    bounds.height + paddingY * 2,
+    0x333333, 0.9
+  ).setStrokeStyle(2, 0x888888).setDepth(249);
+
+  // Move bg behind text, then both fade
+  const container = scene.add.container(0, 0).setDepth(250);
+  container.add([bg, text]);
+
+  scene.tweens.add({
+    targets: container, y: -40, alpha: 0,
+    duration: 1200, delay: 600, ease: "Cubic.easeOut",
+    onComplete: () => container.destroy(),
+  });
+}
+
 export function impact(scene: Phaser.Scene, x: number, y: number): void {
   // impact effect removed
 }
