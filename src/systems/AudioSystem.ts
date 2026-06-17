@@ -2,16 +2,18 @@ import Phaser from "phaser";
 import { AUDIO_DEFS, type AudioKey } from "../config/audio";
 
 export class AudioSystem {
-  private currentBgm: Phaser.Sound.BaseSound | null = null;
+  private static currentBgm: Phaser.Sound.BaseSound | null = null;
 
   preload(scene: Phaser.Scene): void {
     for (const [key, def] of Object.entries(AUDIO_DEFS) as [AudioKey, (typeof AUDIO_DEFS)[AudioKey]][]) {
       if (scene.cache.audio.exists(key)) continue;
-      scene.load.audio(key, def.path);
+      scene.load.audio(key, def.source);
     }
   }
 
   play(scene: Phaser.Scene, key: AudioKey, volume?: number): void {
+    if (!scene.cache.audio.exists(key)) return;
+
     if (!scene.sound.locked) {
       scene.sound.play(key, { volume: volume ?? AUDIO_DEFS[key].volume ?? 1 });
       return;
@@ -24,25 +26,30 @@ export class AudioSystem {
   }
 
   playBgm(scene: Phaser.Scene, key: AudioKey): void {
-    if (this.currentBgm && this.currentBgm.key === key) return;
+    if (!scene.cache.audio.exists(key)) {
+      this.stopBgm();
+      return;
+    }
+
+    if (AudioSystem.currentBgm && AudioSystem.currentBgm.key === key) return;
     this.stopBgm();
-    this.currentBgm = scene.sound.add(key, {
+    AudioSystem.currentBgm = scene.sound.add(key, {
       loop: AUDIO_DEFS[key].loop ?? true,
       volume: AUDIO_DEFS[key].volume ?? 1,
     });
     if (scene.sound.locked) {
       scene.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
-        if (this.currentBgm) this.currentBgm.play();
+        if (AudioSystem.currentBgm) AudioSystem.currentBgm.play();
       });
       return;
     }
-    this.currentBgm.play();
+    AudioSystem.currentBgm.play();
   }
 
   stopBgm(): void {
-    if (!this.currentBgm) return;
-    this.currentBgm.stop();
-    this.currentBgm.destroy();
-    this.currentBgm = null;
+    if (!AudioSystem.currentBgm) return;
+    AudioSystem.currentBgm.stop();
+    AudioSystem.currentBgm.destroy();
+    AudioSystem.currentBgm = null;
   }
 }

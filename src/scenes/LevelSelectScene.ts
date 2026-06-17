@@ -18,6 +18,7 @@ export class LevelSelectScene extends Phaser.Scene {
   private dragStartX = 0;
   private dragStartScroll = 0;
   private cardContainer!: Phaser.GameObjects.Container;
+  private pointerMoved = false;
 
   constructor() {
     super({ key: "LevelSelectScene" });
@@ -61,7 +62,9 @@ export class LevelSelectScene extends Phaser.Scene {
     this.updateCardPositions();
 
     this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+      if (this.isButtonArea(pointer.x, pointer.y)) return;
       this.dragging = true;
+      this.pointerMoved = false;
       this.dragStartX = pointer.x;
       this.dragStartScroll = this.scrollX;
     });
@@ -69,6 +72,7 @@ export class LevelSelectScene extends Phaser.Scene {
     this.input.on("pointermove", (pointer: Phaser.Input.Pointer) => {
       if (!this.dragging) return;
       const dx = pointer.x - this.dragStartX;
+      if (Math.abs(dx) > 8) this.pointerMoved = true;
       this.targetScrollX = this.dragStartScroll - dx;
     });
 
@@ -77,7 +81,7 @@ export class LevelSelectScene extends Phaser.Scene {
       this.dragging = false;
 
       const dx = pointer.x - this.dragStartX;
-      if (Math.abs(dx) > 40) {
+      if (this.pointerMoved && Math.abs(dx) > 40) {
         if (dx < 0 && this.currentIndex < LEVEL_COUNT - 1) {
           this.currentIndex++;
         } else if (dx > 0 && this.currentIndex > 0) {
@@ -220,6 +224,15 @@ export class LevelSelectScene extends Phaser.Scene {
       if (px >= cardX - halfW && px <= cardX + halfW) return i;
     }
     return -1;
+  }
+
+  private isButtonArea(x: number, y: number): boolean {
+    const inLeftArrow = x >= 15 && x <= 65 && y >= GAME_HEIGHT / 2 - 20 && y <= GAME_HEIGHT / 2 + 60;
+    const inRightArrow = x >= GAME_WIDTH - 65 && x <= GAME_WIDTH - 15 && y >= GAME_HEIGHT / 2 - 20 && y <= GAME_HEIGHT / 2 + 60;
+    const inStartButton = x >= GAME_WIDTH / 2 - 120 && x <= GAME_WIDTH / 2 + 120 && y >= GAME_HEIGHT - 160 && y <= GAME_HEIGHT - 100;
+    const inBackButton = x >= GAME_WIDTH / 2 - 90 && x <= GAME_WIDTH / 2 + 90 && y >= GAME_HEIGHT - 82.5 && y <= GAME_HEIGHT - 37.5;
+
+    return inLeftArrow || inRightArrow || inStartButton || inBackButton;
   }
 
   private startLevel(level: number) {
