@@ -12,6 +12,7 @@ export class TitleScene extends Phaser.Scene {
 
   preload() {
     this.load.image("ui-title-bg", "assets/ui/弹弓传奇.png");
+    this.load.image("ui-loading-bg", "assets/ui/loading-bg.png");
     this.audio.preload(this, ["hud-bgm", "hud-button-click"]);
   }
 

@@ -36,7 +36,10 @@ export class LevelSelectScene extends Phaser.Scene {
   }
 
   preload() {
-    this.loadingOverlay = createLoadingOverlay(this, "正在进入章节选择");
+    this.loadingOverlay = createLoadingOverlay(this, "正在进入章节选择", {
+      backgroundKey: "ui-loading-bg",
+      shadeAlpha: 0.14,
+    });
     this.load.image("ui-level-bg", "assets/ui/关卡选择背景图.png");
     this.load.image("btn-start", "assets/ui/开始挑战.png");
     this.load.image("btn-back", "assets/ui/返回主菜单.png");

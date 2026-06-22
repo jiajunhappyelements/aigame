@@ -5,11 +5,41 @@ export type LoadingOverlayHandle = {
   destroy: () => void;
 };
 
-export function createLoadingOverlay(scene: Phaser.Scene, label = "加载中..."): LoadingOverlayHandle {
+export type LoadingOverlayOptions = {
+  backgroundKey?: string;
+  backgroundAlpha?: number;
+  shadeAlpha?: number;
+};
+
+export function createLoadingOverlay(
+  scene: Phaser.Scene,
+  label = "加载中...",
+  options: LoadingOverlayOptions = {},
+): LoadingOverlayHandle {
   const root = scene.add.container(0, 0).setDepth(1000);
   root.setScrollFactor(0);
 
-  const shade = scene.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x0f1720, 0.45);
+  const hasBackground = Boolean(options.backgroundKey && scene.textures.exists(options.backgroundKey));
+
+  if (hasBackground) {
+    const bg = scene.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, options.backgroundKey!)
+      .setDisplaySize(GAME_WIDTH, GAME_HEIGHT)
+      .setAlpha(options.backgroundAlpha ?? 1);
+    root.add(bg);
+  } else {
+    const fallbackBg = scene.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x0f1720, 1);
+    fallbackBg.setOrigin(0.5);
+    root.add(fallbackBg);
+  }
+
+  const shade = scene.add.rectangle(
+    GAME_WIDTH / 2,
+    GAME_HEIGHT / 2,
+    GAME_WIDTH,
+    GAME_HEIGHT,
+    0x0b1118,
+    hasBackground ? (options.shadeAlpha ?? 0.18) : 0.45,
+  );
   shade.setOrigin(0.5);
   root.add(shade);
 
