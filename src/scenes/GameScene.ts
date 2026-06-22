@@ -16,11 +16,13 @@ import { Hud } from "../ui/Hud";
 import { ActionButtons } from "../ui/ActionButtons";
 import { CardPanel } from "../ui/CardPanel";
 import { createButton, createPanel, createTitle } from "../ui/UIHelper";
+import { createLoadingOverlay, type LoadingOverlayHandle } from "../ui/LoadingOverlay";
 import { ALLY_SPECS } from "../config/units";
 import type { AllyId, GameState } from "../types";
 
 export class GameScene extends Phaser.Scene {
   private audio = new AudioSystem();
+  private loadingOverlay: LoadingOverlayHandle | null = null;
   private state!: GameState;
   private hud!: Hud;
   private cardPanel!: CardPanel;
@@ -40,6 +42,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   preload() {
+    this.loadingOverlay = createLoadingOverlay(this, "正在载入战斗");
     this.audio.preload(this);
     for (const def of SPRITE_DEFS) {
       this.load.image(def.key, def.path);
@@ -48,6 +51,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   create(data?: { level?: number }) {
+    this.loadingOverlay?.destroy();
+    this.loadingOverlay = null;
     this.currentLevel = data?.level || 1;
     this.paused = false;
     this.pauseOverlay = null;

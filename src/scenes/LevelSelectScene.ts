@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { GAME_WIDTH, GAME_HEIGHT, LEVEL_COUNT } from "../config/game";
+import { createLoadingOverlay, type LoadingOverlayHandle } from "../ui/LoadingOverlay";
 
 const LEVEL_IMAGE_KEYS: Record<number, string> = {
   1: "card-哥布林入侵",
@@ -21,6 +22,7 @@ export class LevelSelectScene extends Phaser.Scene {
   private cards: Phaser.GameObjects.Image[] = [];
   private levelNumImages: Phaser.GameObjects.Image[] = [];
   private levelNameTexts: Phaser.GameObjects.Text[] = [];
+  private loadingOverlay: LoadingOverlayHandle | null = null;
   private pendingLevel = 1;
   private scrollX = 0;
   private targetScrollX = 0;
@@ -34,6 +36,7 @@ export class LevelSelectScene extends Phaser.Scene {
   }
 
   preload() {
+    this.loadingOverlay = createLoadingOverlay(this, "正在进入章节选择");
     this.load.image("ui-level-bg", "assets/ui/关卡选择背景图.png");
     this.load.image("btn-start", "assets/ui/开始挑战.png");
     this.load.image("btn-back", "assets/ui/返回主菜单.png");
@@ -215,6 +218,8 @@ export class LevelSelectScene extends Phaser.Scene {
     });
 
     this.cameras.main.fadeIn(300, 0, 0, 0);
+    this.loadingOverlay?.destroy();
+    this.loadingOverlay = null;
   }
 
   private snapToClosestCard() {
