@@ -2,99 +2,139 @@ import Phaser from "phaser";
 import type { AllyId, GameState, Upgrade } from "../types";
 import { getAllyPortrait } from "../config/portraits";
 import { ALLY_SPECS } from "../config/units";
-import { floatText } from "./Effects";
+import { showToast } from "./Effects";
+import { GAME_WIDTH, GAME_HEIGHT } from "../config/game";
+
+const SKILL_COST: Record<number, number> = { 1: 75, 2: 150, 3: 300 };
+const MAX_DISPLAY = 8;
 
 export class UpgradeSystem {
   private gs: GameState;
-  private upgradeCost = 100;
-  private costMultiplier = 1.55;
+  private skill1Levels: Record<string, number> = {};
+  private skill2Levels: Record<string, number> = {};
 
   constructor(
     private gsRef: GameState,
-    private openModal: (upgrades: Upgrade[], onPick: (upgrade: Upgrade) => void) => void
+    private openModal: (
+      upgrades: Upgrade[],
+      onPick: (upgrade: Upgrade) => boolean,
+      onClose: () => void
+    ) => void
   ) {
     this.gs = gsRef;
   }
 
+  getSkillLevels(allyId: AllyId): { sk1: number; sk2: number } {
+    return {
+      sk1: this.skill1Levels[`${allyId}_s1`] ?? 0,
+      sk2: this.skill2Levels[`${allyId}_s2`] ?? 0,
+    };
+  }
+
   tryOpenUpgradeModal(scene: Phaser.Scene): void {
     if (this.gs.modalOpen) return;
-    if (this.gs.gold < this.upgradeCost) {
-      floatText(scene, 270, 860, "金币不足", 0xffb3a7);
-      return;
-    }
-    this.gs.gold -= this.upgradeCost;
     this.gs.modalOpen = true;
-    const options = Phaser.Utils.Array.Shuffle(this.createUpgradePool()).slice(0, 3);
-    this.openModal(options, (upgrade) => this.applyUpgrade(scene, upgrade));
+    const pool = this.createUpgradePool();
+    this.openModal(
+      pool,
+      (upgrade) => this.applyUpgrade(scene, upgrade),
+      () => this.closeModal()
+    );
   }
 
-  private applyUpgrade(scene: Phaser.Scene, upgrade: Upgrade): void {
-    upgrade.apply();
-    this.upgradeCost = Math.round(this.upgradeCost * this.costMultiplier);
+  private closeModal(): void {
     this.gs.modalOpen = false;
-    floatText(scene, 270, 210, upgrade.title, 0xfff0a8);
   }
 
-  get currentCost(): number {
-    return this.upgradeCost;
+  private applyUpgrade(scene: Phaser.Scene, upgrade: Upgrade): boolean {
+    if (this.gs.gold < upgrade.cost) {
+      showToast(scene, GAME_WIDTH / 2, GAME_HEIGHT / 2, `金币不足 (需要${upgrade.cost})`);
+      return false;
+    }
+    this.gs.gold -= upgrade.cost;
+    upgrade.apply();
+    this.gs.modalOpen = false;
+    showToast(scene, GAME_WIDTH / 2, GAME_HEIGHT / 2, `${upgrade.skillName} 强化成功!`);
+    return true;
   }
 
   private createUpgradePool(): Upgrade[] {
     const pool: Upgrade[] = [];
 
-    for (const ally of this.gs.allies) {
-      const allyId = ally.id as AllyId;
+    // Show skills for all units unlocked at current level (not just those on field)
+    for (const allyId of this.gs.unlockedAllies) {
       const spec = ALLY_SPECS[allyId];
       if (!spec) continue;
 
-      if (spec.skill1 && ally.skill1Level < 3) {
-        const lv = ally.skill1Level + 1;
-        const cost = lv === 2 ? 80 : 200;
+      const sk1Key = `${allyId}_s1`;
+      const sk2Key = `${allyId}_s2`;
+      const sk1Lv = this.skill1Levels[sk1Key] ?? 0;
+      const sk2Lv = this.skill2Levels[sk2Key] ?? 0;
+
+      if (spec.skill1 && sk1Lv < 3) {
+        const nextLv = sk1Lv + 1;
+        const cost = SKILL_COST[nextLv];
+        const lvKey = `lv${nextLv}` as keyof typeof spec.skill1;
+        const effectDesc = spec.skill1[lvKey] as string;
+        const fullDesc = spec.skill1.desc.replace(
+          /\d+%\/\d+%\/\d+%/,
+          effectDesc
+        );
         pool.push({
-          id: `${ally.id}_s1_lv${lv}`,
-          title: `${spec.name}·${spec.skill1.name}`,
-          desc: `技能升至Lv${lv}`,
+          id: `${allyId}_s1_lv${nextLv}`,
+          title: `${spec.name}`,
+          desc: `${spec.skill1.name} Lv${sk1Lv}→${nextLv}: ${fullDesc}`,
           icon: getAllyPortrait(allyId),
-          apply: () => { ally.skill1Level = lv; }
+          cost,
+          unitName: spec.name,
+          skillName: spec.skill1.name,
+          nextLevel: nextLv,
+          apply: () => {
+            this.skill1Levels[sk1Key] = nextLv;
+            // Apply to all existing allies of this type
+            for (const a of this.gs.allies) {
+              if (a.id === allyId) a.skill1Level = nextLv;
+            }
+          }
         });
       }
 
-      if (spec.skill2 && ally.skill2Level < 3) {
-        const lv = ally.skill2Level + 1;
-        const cost = lv === 2 ? 80 : 200;
+      if (spec.skill2 && sk2Lv < 3) {
+        const nextLv = sk2Lv + 1;
+        const cost = SKILL_COST[nextLv];
+        const lvKey = `lv${nextLv}` as keyof typeof spec.skill2;
+        const effectDesc = spec.skill2![lvKey] as string;
+        const fullDesc = spec.skill2!.desc.replace(
+          /\d+%\/\d+%\/\d+%/,
+          effectDesc
+        );
         pool.push({
-          id: `${ally.id}_s2_lv${lv}`,
-          title: `${spec.name}·${spec.skill2.name}`,
-          desc: `技能升至Lv${lv}`,
+          id: `${allyId}_s2_lv${nextLv}`,
+          title: `${spec.name}`,
+          desc: `${spec.skill2!.name} Lv${sk2Lv}→${nextLv}: ${fullDesc}`,
           icon: getAllyPortrait(allyId),
-          apply: () => { ally.skill2Level = lv; }
+          cost,
+          unitName: spec.name,
+          skillName: spec.skill2!.name,
+          nextLevel: nextLv,
+          apply: () => {
+            this.skill2Levels[sk2Key] = nextLv;
+            for (const a of this.gs.allies) {
+              if (a.id === allyId) a.skill2Level = nextLv;
+            }
+          }
         });
       }
     }
 
-    pool.push({
-      id: "all_hp",
-      title: "坚韧护符",
-      desc: "所有单位生命+25%",
-      icon: "wall",
-      apply: () => {
-        this.gs.hpMultiplier += 0.25;
-        for (const a of this.gs.allies) {
-          const gain = a.maxHp * 0.25;
-          a.maxHp += gain;
-          a.hp += gain;
-        }
+    // Randomly pick MAX_DISPLAY if pool exceeds limit
+    if (pool.length > MAX_DISPLAY) {
+      for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]];
       }
-    });
-
-    pool.push({
-      id: "bounty",
-      title: "赏金契约",
-      desc: "击杀金币+25%",
-      icon: "coin",
-      apply: () => { this.gs.bountyMultiplier += 0.25; }
-    });
-
+      return pool.slice(0, MAX_DISPLAY);
+    }
     return pool;
   }
 }

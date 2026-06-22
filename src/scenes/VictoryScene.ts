@@ -1,22 +1,25 @@
 import Phaser from "phaser";
 import { GAME_WIDTH, GAME_HEIGHT, LEVEL_COUNT, loadSave, saveSave } from "../config/game";
+import { AudioSystem } from "../systems/AudioSystem";
 import { createButton, createPanel, createTitle } from "../ui/UIHelper";
 import type { GameData } from "../types";
 
 export class VictoryScene extends Phaser.Scene {
+  private audio = new AudioSystem();
+
   constructor() {
     super({ key: "VictoryScene" });
   }
 
   preload() {
     this.load.image("ui-victory-bg", "assets/ui/闯关成功.png");
+    this.audio.preload(this);
   }
 
   create(data: GameData) {
     const level = data.level || 1;
     const goldEarned = data.goldEarned || 0;
 
-    // 更新存档
     const save = loadSave();
     save.gold += goldEarned;
     if (level >= save.unlockedLevel && level < LEVEL_COUNT) {
@@ -33,6 +36,14 @@ export class VictoryScene extends Phaser.Scene {
 
     // 标题
     createTitle(this, GAME_WIDTH / 2, GAME_HEIGHT / 2 - 130, "胜利!", "52px", "#ffd700");
+
+    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 90, "通关成功！", {
+      fontFamily: "Arial",
+      fontSize: "22px",
+      color: "#ffffff",
+      stroke: "#000000",
+      strokeThickness: 4,
+    }).setOrigin(0.5);
 
     // 金币奖励
     this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 60, `获得金币: +${goldEarned}`, {
@@ -58,6 +69,8 @@ export class VictoryScene extends Phaser.Scene {
     if (level < LEVEL_COUNT) {
       const nextBtn = createButton(this, GAME_WIDTH / 2, btnY, 200, 55, "下一关", 0x4a9eff, "24px");
       nextBtn.on("pointerdown", () => {
+        this.audio.play(this, "hud-button-click");
+        this.audio.stopBgm();
         this.cameras.main.fadeOut(300, 0, 0, 0);
         this.cameras.main.once("camerafadeoutcomplete", () => {
           this.scene.start("GameScene", { level: level + 1 });
@@ -76,6 +89,8 @@ export class VictoryScene extends Phaser.Scene {
       "20px",
     );
     backBtn.on("pointerdown", () => {
+      this.audio.play(this, "hud-button-click");
+      this.audio.stopBgm();
       this.cameras.main.fadeOut(300, 0, 0, 0);
       this.cameras.main.once("camerafadeoutcomplete", () => {
         this.scene.start("LevelSelectScene", { level: level + 1 });

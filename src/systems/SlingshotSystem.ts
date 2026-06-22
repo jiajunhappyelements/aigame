@@ -4,6 +4,7 @@ import { ALLY_SPECS } from "../config/units";
 import { LANES, SLINGSHOT, FIELD_LIMITS, GAME_WIDTH, GAME_HEIGHT, CASTLE } from "../config/game";
 import { updateBallPhysics, createBallState, isBallStopped, type BallState } from "./BallPhysics";
 import { CombatSystem } from "./CombatSystem";
+import { UpgradeSystem } from "./UpgradeSystem";
 import { createFighter } from "../entities/FighterFactory";
 import { landingBlast, exposureFlash, floatText } from "./Effects";
 
@@ -20,6 +21,7 @@ export class SlingshotSystem {
   private scene: Phaser.Scene;
   private gs: GameState;
   private combatSystem: CombatSystem | null = null;
+  private upgradeSystem: UpgradeSystem | null = null;
   private ball!: Phaser.GameObjects.Container;
   private ballGraphic!: Phaser.GameObjects.Graphics;
   private rubberBand!: Phaser.GameObjects.Graphics;
@@ -137,7 +139,9 @@ export class SlingshotSystem {
 
     const cardId = this.gs.pendingCardId!;
 
-    // 创建投射物精灵 — 从弹弓中心发射
+    // 立即计入召唤次数，防止在飞行期间重复选择同一单位
+    this.countSummon(cardId);
+    this.gs.pendingCardId = null;
     const launchX = LANES.slingX;
     const launchY = LANES.slingY;
     const projSprite = this.scene.add.container(launchX, launchY);
@@ -230,9 +234,14 @@ export class SlingshotSystem {
         const spec = ALLY_SPECS[cardId];
         const fighter = createFighter(this.scene, cardId, "ally", x, y, spec);
         fighter.launched = false;
+
+        if (this.upgradeSystem) {
+          const levels = this.upgradeSystem.getSkillLevels(cardId);
+          fighter.skill1Level = levels.sk1;
+          fighter.skill2Level = levels.sk2;
+        }
         fighter.setAlpha(0);
         this.gs.allies.push(fighter);
-        this.countSummon(cardId);
 
         this.scene.tweens.add({
           targets: fighter,
@@ -303,6 +312,10 @@ export class SlingshotSystem {
 
   setCombatSystem(cs: CombatSystem): void {
     this.combatSystem = cs;
+  }
+
+  setUpgradeSystem(us: UpgradeSystem): void {
+    this.upgradeSystem = us;
   }
 
   cancelPending(): void {

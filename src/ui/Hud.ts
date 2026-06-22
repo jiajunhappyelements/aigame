@@ -20,10 +20,10 @@ export class Hud {
       stroke: "#173040", strokeThickness: 5
     }).setOrigin(0.5).setDepth(60);
 
-    this.goldText = scene.add.text(GAME_WIDTH - 20, 30, "", {
+    this.goldText = scene.add.text(20, 60, "", {
       fontFamily: "Arial", fontSize: "18px", color: "#ffd700",
       stroke: "#173040", strokeThickness: 4
-    }).setOrigin(1, 0.5).setDepth(60);
+    }).setOrigin(0, 0.5).setDepth(60);
 
     const hpBarY = CASTLE.y + 15;
     const hpBarWidth = 200;

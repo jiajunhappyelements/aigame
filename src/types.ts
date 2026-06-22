@@ -111,6 +111,10 @@ export type Upgrade = {
   title: string;
   desc: string;
   icon: string;
+  cost: number;
+  unitName?: string;
+  skillName?: string;
+  nextLevel?: number;
   apply: () => void;
 };
 

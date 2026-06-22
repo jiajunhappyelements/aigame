@@ -22,6 +22,11 @@ export const STAMINA = {
   regenInterval: 1.5,
   regenAmount: 1,
   initialPerWave: 15,
+  getInitialStamina: (level: number): number => {
+    if (level <= 3) return 6;
+    if (level <= 5) return 8;
+    return 10;
+  },
 };
 
 export const FIELD_LIMITS = {
@@ -115,7 +120,7 @@ export function createInitialState(startLevel = 1): GameState {
     spawnTimer: 0,
     castleHp: CASTLE.maxHp,
     castleMaxHp: CASTLE.maxHp,
-    stamina: STAMINA.initialPerWave,
+    stamina: STAMINA.getInitialStamina(level),
     staminaMax: STAMINA.max,
     staminaRegenTimer: 0,
     gold: 0,

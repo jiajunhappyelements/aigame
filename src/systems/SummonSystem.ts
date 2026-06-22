@@ -37,7 +37,8 @@ export class SummonSystem {
     }
 
     const sameNameCount = this.gs.allies.filter(a => a.id === cardId && a.active).length;
-    if (sameNameCount >= spec.maxSameName) {
+    const inflightCount = this.gs.projectiles.filter(p => p.cardId === cardId).length;
+    if (sameNameCount + inflightCount >= spec.maxSameName) {
       floatText(scene, GAME_WIDTH / 2, LANES.summonY - 30, `已到同名上限(${spec.maxSameName})`, 0xff5b4f);
       return false;
     }
