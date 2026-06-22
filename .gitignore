@@ -8,3 +8,5 @@ bin/
 Thumbs.db
 *.swp
 *.swo
+art-source/aihub-generated/
+tmp/

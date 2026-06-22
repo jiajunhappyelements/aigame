@@ -2,8 +2,8 @@ import type { AllyId, EnemyId, EffectAnimationDef, FighterAnimationDef } from ".
 
 export const ANIMATION_ATLAS = {
   key: "animation-atlas",
-  dataPath: "/assets/atlas/animations.json",
-  texturePath: "/assets/atlas/",
+  dataPath: "assets/atlas/animations.json",
+  texturePath: "assets/atlas/",
 } as const;
 
 const sequence = (path: string, action: string, count: number): string[] =>
