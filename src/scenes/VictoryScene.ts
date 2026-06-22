@@ -8,6 +8,10 @@ export class VictoryScene extends Phaser.Scene {
     super({ key: "VictoryScene" });
   }
 
+  preload() {
+    this.load.image("ui-victory-bg", "assets/ui/闯关成功.png");
+  }
+
   create(data: GameData) {
     const level = data.level || 1;
     const goldEarned = data.goldEarned || 0;
@@ -20,17 +24,18 @@ export class VictoryScene extends Phaser.Scene {
     }
     saveSave(save);
 
-    // 半透明遮罩
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.8);
+    // 背景图
+    this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, "ui-victory-bg")
+      .setDisplaySize(GAME_WIDTH, GAME_HEIGHT);
 
     // 面板
-    createPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2 - 20, 400, 420, 0x1a2a3a, 0.95);
+    createPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2 - 20, 400, 350, 0x1a2a3a, 0.55);
 
     // 标题
     createTitle(this, GAME_WIDTH / 2, GAME_HEIGHT / 2 - 130, "胜利!", "52px", "#ffd700");
 
     // 金币奖励
-    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 30, `获得金币: +${goldEarned}`, {
+    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 60, `获得金币: +${goldEarned}`, {
       fontFamily: "Arial",
       fontSize: "22px",
       color: "#ffd700",
@@ -39,7 +44,7 @@ export class VictoryScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // 总金币
-    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 10, `总金币: ${save.gold}`, {
+    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 20, `总金币: ${save.gold}`, {
       fontFamily: "Arial",
       fontSize: "18px",
       color: "#cccccc",
@@ -48,7 +53,7 @@ export class VictoryScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // 按钮
-    const btnY = GAME_HEIGHT / 2 + 90;
+    const btnY = GAME_HEIGHT / 2 + 40;
 
     if (level < LEVEL_COUNT) {
       const nextBtn = createButton(this, GAME_WIDTH / 2, btnY, 200, 55, "下一关", 0x4a9eff, "24px");
@@ -73,7 +78,7 @@ export class VictoryScene extends Phaser.Scene {
     backBtn.on("pointerdown", () => {
       this.cameras.main.fadeOut(300, 0, 0, 0);
       this.cameras.main.once("camerafadeoutcomplete", () => {
-        this.scene.start("LevelSelectScene");
+        this.scene.start("LevelSelectScene", { level: level + 1 });
       });
     });
 

@@ -71,7 +71,7 @@ export class SlingshotSystem {
 
     this.ball.setPosition(LANES.slingX, LANES.slingY);
     this.ball.setVisible(true);
-    this.rubberBand.clear();
+    this.drawRubberBand(LANES.slingX, LANES.slingY);
     this.hideTrajectory();
   }
 

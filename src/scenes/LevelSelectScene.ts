@@ -1,115 +1,143 @@
 import Phaser from "phaser";
-import { GAME_WIDTH, GAME_HEIGHT, LEVEL_COUNT, LEVEL_NAMES, loadSave } from "../config/game";
-import { createButton, createTitle } from "../ui/UIHelper";
+import { GAME_WIDTH, GAME_HEIGHT, LEVEL_COUNT } from "../config/game";
 
-const CARD_W = 160;
-const CARD_H = 220;
-const CARD_GAP = 30;
-const CARD_SPACING = CARD_W + CARD_GAP;
+const LEVEL_IMAGE_KEYS: Record<number, string> = {
+  1: "card-哥布林入侵",
+  2: "card-骷髅军团",
+  3: "card-暗夜蝙蝠",
+  4: "card-幽灵来袭",
+  5: "card-巨龙之巢",
+  6: "card-巨魔攻城",
+  7: "card-魔王降临",
+};
+
+const CARD_W = 280;
+const CARD_H = 400;
+const CARD_SPACING = 320;
+const DRAG_THRESHOLD = 130; // 拖动超过此距离自动切到下一关
 
 export class LevelSelectScene extends Phaser.Scene {
-  private cards: Phaser.GameObjects.Container[] = [];
   private currentIndex = 0;
+  private cards: Phaser.GameObjects.Image[] = [];
+  private levelNumImages: Phaser.GameObjects.Image[] = [];
+  private levelNameTexts: Phaser.GameObjects.Text[] = [];
+  private pendingLevel = 1;
   private scrollX = 0;
   private targetScrollX = 0;
   private dragging = false;
   private dragStartX = 0;
   private dragStartScroll = 0;
-  private cardContainer!: Phaser.GameObjects.Container;
+  private lastSwitchX = 0;
 
   constructor() {
     super({ key: "LevelSelectScene" });
   }
 
-  create() {
-    const save = loadSave();
-
-    // 背景
-    const bg = this.add.graphics();
-    bg.fillGradientStyle(0x0a1628, 0x0a1628, 0x1a3a5a, 0x1a3a5a, 1);
-    bg.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-
-    // 装饰
-    const deco = this.add.graphics();
-    deco.lineStyle(1, 0x4a9eff, 0.15);
-    for (let i = 0; i < 10; i++) {
-      deco.lineBetween(0, 100 + i * 80, GAME_WIDTH, 100 + i * 80);
+  preload() {
+    this.load.image("ui-level-bg", "assets/ui/关卡选择背景图.png");
+    this.load.image("btn-start", "assets/ui/开始挑战.png");
+    this.load.image("btn-back", "assets/ui/返回主菜单.png");
+    const names = ["哥布林入侵", "骷髅军团", "暗夜蝙蝠", "幽灵来袭", "巨龙之巢", "巨魔攻城", "魔王降临"];
+    for (const name of names) {
+      this.load.image(`card-${name}`, `assets/ui/${name}.png`);
     }
+  }
 
-    // 标题
-    createTitle(this, GAME_WIDTH / 2, 80, "选择关卡", "40px", "#ffd700");
+  create(data?: { level?: number }) {
+    this.pendingLevel = data?.level || 1;
 
-    // 关卡卡片容器
-    this.cardContainer = this.add.container(0, 0);
+    // 清理旧卡片和文字（防止返回时重复创建）
+    for (const card of this.cards) {
+      card.destroy();
+    }
     this.cards = [];
+    for (const img of this.levelNumImages) img.destroy();
+    this.levelNumImages = [];
+    for (const t of this.levelNameTexts) t.destroy();
+    this.levelNameTexts = [];
 
-    const centerY = GAME_HEIGHT / 2 + 20;
-
-    for (let i = 1; i <= LEVEL_COUNT; i++) {
-      const card = this.createLevelCard(i);
-      card.setData("index", i - 1);
-      card.setData("baseY", centerY);
-      this.cardContainer.add(card);
-      this.cards.push(card);
+    // 确保关卡卡片纹理已加载（从 GameScene 返回时可能丢失）
+    const names = ["哥布林入侵", "骷髅军团", "暗夜蝙蝠", "幽灵来袭", "巨龙之巢", "巨魔攻城", "魔王降临"];
+    let needsReload = false;
+    for (const name of names) {
+      if (!this.textures.exists(`card-${name}`)) {
+        needsReload = true;
+        this.load.image(`card-${name}`, `assets/ui/${name}.png`);
+      }
     }
+    if (needsReload) {
+      this.load.start();
+      this.load.once("complete", () => {
+        this.buildScene();
+      });
+    } else {
+      this.buildScene();
+    }
+  }
 
-    // 初始滚动到第1关居中
-    this.scrollX = 0;
-    this.targetScrollX = 0;
-    this.currentIndex = 0;
-    this.updateCardPositions();
+  private buildScene() {
+    // 背景
+    this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, "ui-level-bg")
+      .setDisplaySize(GAME_WIDTH, GAME_HEIGHT)
+      .setDepth(0);
 
-    // 拖拽交互
-    this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
-      this.dragging = true;
-      this.dragStartX = pointer.x;
-      this.dragStartScroll = this.scrollX;
-    });
+    // 创建所有关卡卡片 + 关卡数字图片 + 关卡名称
+    const centerY = 400;
+    const levelNames = ["哥布林入侵", "骷髅军团", "暗夜蝙蝠", "幽灵来袭", "巨龙之巢", "巨魔攻城", "魔王降临"];
+    for (let i = 1; i <= LEVEL_COUNT; i++) {
+      const card = this.add.image(0, centerY, LEVEL_IMAGE_KEYS[i]);
+      card.setDepth(1);
+      this.cards.push(card);
 
-    this.input.on("pointermove", (pointer: Phaser.Input.Pointer) => {
-      if (!this.dragging) return;
-      const dx = pointer.x - this.dragStartX;
-      this.targetScrollX = this.dragStartScroll - dx;
-    });
-
-    this.input.on("pointerup", (pointer: Phaser.Input.Pointer) => {
-      if (!this.dragging) return;
-      this.dragging = false;
-
-      const dx = pointer.x - this.dragStartX;
-      // 快速滑动切换
-      if (Math.abs(dx) > 40) {
-        if (dx < 0 && this.currentIndex < LEVEL_COUNT - 1) {
-          this.currentIndex++;
-        } else if (dx > 0 && this.currentIndex > 0) {
-          this.currentIndex--;
-        }
+      // 关卡数字（图片，显示在卡片上；无图片资源时用文字）
+      if (this.textures.exists(`num-${i}`)) {
+        const numImg = this.add.image(0, centerY - 20, `num-${i}`);
+        numImg.setScale(0.012);
+        numImg.setDepth(2);
+        this.levelNumImages.push(numImg);
       } else {
-        // 点击检测：判断点击了哪张卡
-        const clickIndex = this.getCardIndexAt(pointer.x);
-        if (clickIndex >= 0 && clickIndex < LEVEL_COUNT) {
-          if (clickIndex === this.currentIndex) {
-            // 点击居中卡 → 开始游戏
-            this.startLevel(clickIndex + 1);
-            return;
-          }
-          this.currentIndex = clickIndex;
-        }
+        const numImg = this.add.text(0, centerY - 20, `${i}`, {
+          fontFamily: "Arial",
+          fontSize: "80px",
+          color: "#ffffff",
+          stroke: "#000000",
+          strokeThickness: 8,
+          fontStyle: "bold",
+        }).setOrigin(0.5).setDepth(2);
+        this.levelNumImages.push(numImg as unknown as Phaser.GameObjects.Image);
       }
 
-      this.targetScrollX = this.currentIndex * CARD_SPACING;
-    });
+      // 关卡名称（显示在卡片下方）
+      const nameText = this.add.text(0, centerY + 160, levelNames[i - 1], {
+        fontFamily: "Arial",
+        fontSize: "22px",
+        color: "#ffffff",
+        stroke: "#000000",
+        strokeThickness: 4,
+      }).setOrigin(0.5).setDepth(2);
+      this.levelNameTexts.push(nameText);
+    }
 
-    // 开始按钮
-    const startBtn = createButton(this, GAME_WIDTH / 2, GAME_HEIGHT - 130, 240, 60, "开始挑战", 0x4a9eff, "26px");
-    startBtn.setDepth(10);
+    // 初始位置（定位到指定关卡）
+    this.currentIndex = Math.max(0, Math.min(this.pendingLevel - 1, LEVEL_COUNT - 1));
+    this.scrollX = this.currentIndex * CARD_SPACING;
+    this.targetScrollX = this.currentIndex * CARD_SPACING;
+    this.updateCardPositions();
+
+    // 开始挑战按钮
+    const startBtn = this.add.image(GAME_WIDTH / 2, 740, "btn-start")
+      .setInteractive({ useHandCursor: true })
+      .setDepth(10);
+    startBtn.setDisplaySize(240, 60);
     startBtn.on("pointerdown", () => {
       this.startLevel(this.currentIndex + 1);
     });
 
-    // 返回按钮
-    const backBtn = createButton(this, GAME_WIDTH / 2, GAME_HEIGHT - 60, 180, 45, "返回主菜单", 0x555555, "18px");
-    backBtn.setDepth(10);
+    // 返回主菜单按钮
+    const backBtn = this.add.image(GAME_WIDTH / 2, 820, "btn-back")
+      .setInteractive({ useHandCursor: true })
+      .setDepth(10);
+    backBtn.setDisplaySize(200, 50);
     backBtn.on("pointerdown", () => {
       this.cameras.main.fadeOut(300, 0, 0, 0);
       this.cameras.main.once("camerafadeoutcomplete", () => {
@@ -117,98 +145,148 @@ export class LevelSelectScene extends Phaser.Scene {
       });
     });
 
-    // 金币显示
-    this.add.text(GAME_WIDTH - 20, 20, `💰 ${save.gold}`, {
-      fontFamily: "Arial",
-      fontSize: "20px",
-      color: "#ffd700",
-      stroke: "#000000",
-      strokeThickness: 3,
-    }).setOrigin(1, 0).setDepth(10);
+    // 拖拽交互
+    this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+      this.dragging = true;
+      this.dragStartX = pointer.x;
+      this.dragStartScroll = this.scrollX;
+      this.lastSwitchX = pointer.x;
+    });
 
-    // 底部提示
-    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 170, "← 左右滑动选择关卡 →", {
-      fontFamily: "Arial",
-      fontSize: "14px",
-      color: "#888888",
-    }).setOrigin(0.5).setDepth(10);
+    this.input.on("pointermove", (pointer: Phaser.Input.Pointer) => {
+      if (!this.dragging) return;
+      const dx = pointer.x - this.dragStartX;
+      this.targetScrollX = this.dragStartScroll - dx;
+
+      // 实时检测：从上次切换点算起，拖动超过阈值自动滚动到下一关
+      const switchDx = pointer.x - this.lastSwitchX;
+      if (Math.abs(switchDx) > DRAG_THRESHOLD) {
+        const direction = switchDx < 0 ? 1 : -1;
+        const newIndex = this.currentIndex + direction;
+        if (newIndex >= 0 && newIndex < LEVEL_COUNT) {
+          const oldTarget = this.targetScrollX;
+          this.currentIndex = newIndex;
+          this.targetScrollX = this.currentIndex * CARD_SPACING;
+          this.lastSwitchX = pointer.x;
+          // 根据切换前后的差值调整 dragStartScroll，保持视觉连续
+          this.dragStartScroll += this.targetScrollX - oldTarget;
+        }
+      }
+    });
+
+    this.input.on("pointerup", (pointer: Phaser.Input.Pointer) => {
+      if (!this.dragging) return;
+      this.dragging = false;
+      this.snapToClosestCard();
+    });
+
+    // 原生 DOM 事件：监听 document 级别的 mouseup，捕获鼠标在画布外松开的情况
+    const onDocMouseUp = () => {
+      if (this.dragging) {
+        this.dragging = false;
+        this.snapToClosestCard();
+      }
+    };
+    document.addEventListener("mouseup", onDocMouseUp);
+    this.events.on("shutdown", () => {
+      document.removeEventListener("mouseup", onDocMouseUp);
+    });
+
+    // 原生 DOM 事件：监听 mousemove，鼠标移近画布边缘时结束拖动
+    const canvas = this.game.canvas;
+    const onDocMouseMove = (e: MouseEvent) => {
+      if (!this.dragging) return;
+      const rect = canvas.getBoundingClientRect();
+      const EDGE = 2; // 像素
+      const mx = e.clientX;
+      const my = e.clientY;
+      const nearLeft = mx <= rect.left + EDGE;
+      const nearRight = mx >= rect.right - EDGE;
+      const nearTop = my <= rect.top + EDGE;
+      const nearBottom = my >= rect.bottom - EDGE;
+      if (nearLeft || nearRight || nearTop || nearBottom) {
+        this.dragging = false;
+        this.snapToClosestCard();
+      }
+    };
+    document.addEventListener("mousemove", onDocMouseMove);
+    this.events.on("shutdown", () => {
+      document.removeEventListener("mousemove", onDocMouseMove);
+    });
 
     this.cameras.main.fadeIn(300, 0, 0, 0);
   }
 
+  private snapToClosestCard() {
+    const centerX = GAME_WIDTH / 2;
+    let closestIndex = 0;
+    let minDist = Infinity;
+    for (let i = 0; i < this.cards.length; i++) {
+      const cardX = centerX + i * CARD_SPACING - this.scrollX;
+      const dist = Math.abs(cardX - centerX);
+      if (dist < minDist) {
+        minDist = dist;
+        closestIndex = i;
+      }
+    }
+    this.currentIndex = closestIndex;
+    this.targetScrollX = this.currentIndex * CARD_SPACING;
+  }
+
   update(_time: number, delta: number) {
-    // 平滑滚动
-    this.scrollX += (this.targetScrollX - this.scrollX) * Math.min(1, delta * 0.008);
+    if (this.dragging) {
+      // 拖动时直接跟随手指，无延迟
+      this.scrollX = this.targetScrollX;
+    } else {
+      // 松手后平滑吸附
+      this.scrollX += (this.targetScrollX - this.scrollX) * Math.min(1, delta * 0.008);
+    }
     this.updateCardPositions();
   }
 
   private updateCardPositions() {
     const centerX = GAME_WIDTH / 2;
-    const centerY = GAME_HEIGHT / 2 + 20;
+    const centerY = 380;
 
     for (let i = 0; i < this.cards.length; i++) {
       const card = this.cards[i];
       const cardX = centerX + i * CARD_SPACING - this.scrollX;
       const distFromCenter = Math.abs(i - this.currentIndex);
 
-      // 居中卡放大，远处卡缩小
-      const scale = distFromCenter === 0 ? 1.0 : distFromCenter === 1 ? 0.75 : 0.55;
-      const alpha = distFromCenter === 0 ? 1.0 : distFromCenter === 1 ? 0.7 : 0.4;
+      // 圆柱效果：中间大，两边小（整体放大1.25倍）
+      const scale = distFromCenter === 0 ? 1.125 : distFromCenter === 1 ? 0.875 : 0.625;
+      const alpha = distFromCenter === 0 ? 1.0 : distFromCenter === 1 ? 0.6 : 0.3;
 
-      card.setPosition(cardX, centerY);
+      // 第6关（索引5）往上挪25，第5关（索引4）往下挪25，第2关（索引1）往下挪35，整体再往下挪90
+      let cardY = centerY + 90;
+      if (i === 5) cardY = centerY + 90 - 25;
+      if (i === 4) cardY = centerY + 90 + 25;
+      if (i === 1) cardY = centerY + 90 + 35;
+
+      card.setPosition(cardX, cardY);
       card.setScale(scale);
       card.setAlpha(alpha);
       card.setDepth(distFromCenter === 0 ? 5 : distFromCenter === 1 ? 3 : 1);
+
+      // 同步移动关卡数字图片和关卡名称
+      const numImg = this.levelNumImages[i];
+      const nameText = this.levelNameTexts[i];
+      if (numImg) {
+        numImg.setPosition(cardX, cardY - 20);
+        numImg.setScale(scale);
+        numImg.setAlpha(alpha);
+        numImg.setDepth(distFromCenter === 0 ? 6 : distFromCenter === 1 ? 4 : 2);
+      }
+      if (nameText) {
+        let nameOffsetY = 160;
+        if (i === 1) nameOffsetY = 125;
+        if (i === 4) nameOffsetY = 135;
+        nameText.setPosition(cardX, cardY + nameOffsetY);
+        nameText.setScale(scale);
+        nameText.setAlpha(alpha);
+        nameText.setDepth(distFromCenter === 0 ? 6 : distFromCenter === 1 ? 4 : 2);
+      }
     }
-  }
-
-  private createLevelCard(level: number): Phaser.GameObjects.Container {
-    const container = this.add.container(0, 0);
-
-    // 卡片背景
-    const bg = this.add.graphics();
-    bg.fillStyle(0x1a3a5a, 1);
-    bg.fillRoundedRect(-CARD_W / 2, -CARD_H / 2, CARD_W, CARD_H, 16);
-    bg.lineStyle(3, 0x4a9eff, 0.6);
-    bg.strokeRoundedRect(-CARD_W / 2, -CARD_H / 2, CARD_W, CARD_H, 16);
-    container.add(bg);
-
-    // 关卡号
-    const numText = this.add.text(0, -60, `${level}`, {
-      fontFamily: "Arial",
-      fontSize: "56px",
-      color: "#ffffff",
-      stroke: "#000000",
-      strokeThickness: 6,
-    }).setOrigin(0.5);
-    container.add(numText);
-
-    // 关卡名
-    const nameText = this.add.text(0, 20, LEVEL_NAMES[level] || "", {
-      fontFamily: "Arial",
-      fontSize: "18px",
-      color: "#cccccc",
-      align: "center",
-    }).setOrigin(0.5);
-    container.add(nameText);
-
-    // 装饰角标
-    const corner = this.add.graphics();
-    corner.fillStyle(0x4a9eff, 0.3);
-    corner.fillTriangle(-CARD_W / 2, -CARD_H / 2, -CARD_W / 2 + 30, -CARD_H / 2, -CARD_W / 2, -CARD_H / 2 + 30);
-    container.add(corner);
-
-    return container;
-  }
-
-  private getCardIndexAt(px: number): number {
-    const centerX = GAME_WIDTH / 2;
-    for (let i = 0; i < this.cards.length; i++) {
-      const cardX = centerX + i * CARD_SPACING - this.scrollX;
-      const halfW = (CARD_W * (i === this.currentIndex ? 1.0 : i === this.currentIndex - 1 || i === this.currentIndex + 1 ? 0.75 : 0.55)) / 2;
-      if (px >= cardX - halfW && px <= cardX + halfW) return i;
-    }
-    return -1;
   }
 
   private startLevel(level: number) {

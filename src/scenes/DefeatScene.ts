@@ -8,14 +8,19 @@ export class DefeatScene extends Phaser.Scene {
     super({ key: "DefeatScene" });
   }
 
+  preload() {
+    this.load.image("ui-defeat-bg", "assets/ui/关卡失败.png");
+  }
+
   create(data: GameData) {
     const level = data.level || 1;
 
-    // 半透明遮罩
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.8);
+    // 背景图
+    this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, "ui-defeat-bg")
+      .setDisplaySize(GAME_WIDTH, GAME_HEIGHT);
 
     // 面板
-    createPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2 - 20, 400, 350, 0x2a1a1a, 0.95);
+    createPanel(this, GAME_WIDTH / 2, GAME_HEIGHT / 2 - 20, 400, 350, 0x2a1a1a, 0.55);
 
     // 标题
     createTitle(this, GAME_WIDTH / 2, GAME_HEIGHT / 2 - 130, "失败", "52px", "#ff4444");
@@ -38,7 +43,7 @@ export class DefeatScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // 按钮
-    const btnY = GAME_HEIGHT / 2 + 60;
+    const btnY = GAME_HEIGHT / 2 + 40;
 
     const retryBtn = createButton(this, GAME_WIDTH / 2, btnY, 200, 55, "再试一次", 0xff6644, "24px");
     retryBtn.on("pointerdown", () => {

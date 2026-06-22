@@ -40,7 +40,6 @@ export class Hud {
 
   update(): void {
     this.waveText.setText(`第${this.gs.level}关 第${this.gs.wave}波`);
-    this.goldText.setText(`金币 ${this.gs.gold}`);
 
     const hpRatio = Math.max(0, this.gs.castleHp / this.gs.castleMaxHp);
     this.hpBarFill.width = 196 * hpRatio;
