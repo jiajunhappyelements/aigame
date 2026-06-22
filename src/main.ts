@@ -8,6 +8,13 @@ import { DefeatScene } from "./scenes/DefeatScene";
 import { AnimationLabScene } from "./scenes/AnimationLabScene";
 import "./style.css";
 
+const bootScreen = document.getElementById("boot-screen");
+const hideBootScreen = () => {
+  bootScreen?.classList.add("is-hidden");
+};
+
+window.addEventListener("aigame:title-ready", hideBootScreen, { once: true });
+
 const debugScene = new URLSearchParams(window.location.search).get("debug");
 const gameScenes = [TitleScene, LevelSelectScene, GameScene, VictoryScene, DefeatScene];
 const scenes = debugScene === "animations" ? [AnimationLabScene, ...gameScenes] : gameScenes;

@@ -4,8 +4,12 @@ import { AUDIO_DEFS, type AudioKey } from "../config/audio";
 export class AudioSystem {
   private static currentBgm: Phaser.Sound.BaseSound | null = null;
 
-  preload(scene: Phaser.Scene): void {
-    for (const [key, def] of Object.entries(AUDIO_DEFS) as [AudioKey, (typeof AUDIO_DEFS)[AudioKey]][]) {
+  preload(scene: Phaser.Scene, keys?: AudioKey[]): void {
+    const entries = keys
+      ? keys.map((key) => [key, AUDIO_DEFS[key]] as const)
+      : (Object.entries(AUDIO_DEFS) as [AudioKey, (typeof AUDIO_DEFS)[AudioKey]][]);
+
+    for (const [key, def] of entries) {
       if (scene.cache.audio.exists(key)) continue;
       scene.load.audio(key, def.source);
     }

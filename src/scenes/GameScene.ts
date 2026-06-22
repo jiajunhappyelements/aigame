@@ -43,7 +43,7 @@ export class GameScene extends Phaser.Scene {
 
   preload() {
     this.loadingOverlay = createLoadingOverlay(this, "正在载入战斗");
-    this.audio.preload(this);
+    this.audio.preload(this, ["stage1", "stage2", "game-over", "game-win"]);
     for (const def of SPRITE_DEFS) {
       this.load.image(def.key, def.path);
     }

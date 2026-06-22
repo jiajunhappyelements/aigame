@@ -13,7 +13,7 @@ export class DefeatScene extends Phaser.Scene {
 
   preload() {
     this.load.image("ui-defeat-bg", "assets/ui/关卡失败.png");
-    this.audio.preload(this);
+    this.audio.preload(this, ["hud-button-click"]);
   }
 
   create(data: GameData) {

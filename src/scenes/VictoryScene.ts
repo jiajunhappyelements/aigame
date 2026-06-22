@@ -13,7 +13,7 @@ export class VictoryScene extends Phaser.Scene {
 
   preload() {
     this.load.image("ui-victory-bg", "assets/ui/闯关成功.png");
-    this.audio.preload(this);
+    this.audio.preload(this, ["hud-button-click"]);
   }
 
   create(data: GameData) {

@@ -12,7 +12,7 @@ export class TitleScene extends Phaser.Scene {
 
   preload() {
     this.load.image("ui-title-bg", "assets/ui/弹弓传奇.png");
-    this.audio.preload(this);
+    this.audio.preload(this, ["hud-bgm", "hud-button-click"]);
   }
 
   create() {
@@ -43,5 +43,9 @@ export class TitleScene extends Phaser.Scene {
     // 淡入效果
     this.cameras.main.fadeIn(500, 0, 0, 0);
     this.audio.playBgm(this, "hud-bgm");
+
+    this.time.delayedCall(500, () => {
+      window.dispatchEvent(new Event("aigame:title-ready"));
+    });
   }
 }
