@@ -21,16 +21,8 @@ export class TitleScene extends Phaser.Scene {
       .setDisplaySize(GAME_WIDTH, GAME_HEIGHT)
       .setDepth(0);
 
-    // 版本号
-    this.add.text(GAME_WIDTH / 2, 400, "v0.1.0", {
-      fontFamily: "Arial",
-      fontSize: "14px",
-      color: "#666666",
-      align: "center",
-    }).setOrigin(0.5);
-
     // 开始按钮
-    const startBtn = createButton(this, GAME_WIDTH / 2, 560, 220, 60, "开始游戏", 0x4a9eff, "28px");
+    const startBtn = createButton(this, GAME_WIDTH / 2, 890, 220, 60, "开始游戏", 0x4a9eff, "28px");
     startBtn.on("pointerdown", () => {
       this.audio.play(this, "hud-button-click");
       this.audio.stopBgm();
@@ -40,11 +32,11 @@ export class TitleScene extends Phaser.Scene {
       });
     });
 
-    // 提示文字
-    this.add.text(GAME_WIDTH / 2, 700, "拖拽发射英雄，消灭入侵的哥布林！", {
+    // 版本号
+    this.add.text(GAME_WIDTH / 2, 930, "v0.1.0", {
       fontFamily: "Arial",
-      fontSize: "16px",
-      color: "#000000",
+      fontSize: "15px",
+      color: "#ffffff",
       align: "center",
     }).setOrigin(0.5);
 
